@@ -26,7 +26,7 @@ function LanguageSelect({
             <span className="font-medium">{label}</span>
             <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
                 {SUPPORTED_LANGUAGES.map((item) => (
-                    <option key={item.code} value={item.code}>{item.nativeLabel} • {item.supportLevel}</option>
+                    <option key={item.code} value={item.code}>{item.nativeLabel} â€¢ {item.supportLevel}</option>
                 ))}
             </select>
         </label>
@@ -152,3 +152,4 @@ export default function OnboardingPage() {
         </div>
     );
 }
+

@@ -1,5 +1,6 @@
 import { alerts } from '@/data/fixtures/alerts';
 import { storyClusters } from '@/data/fixtures/stories';
+import { getSchemes } from '@/lib/server/schemes/get-schemes';
 import { FeedLane, FeedResponse, Language, StoryCategory, StoryCluster, UserPreferences } from '@/types';
 import { scoreStory } from '@/lib/server/feed/score';
 
@@ -11,6 +12,7 @@ interface GetFeedOptions {
     includeAlerts?: boolean;
     lane?: FeedLane;
     preferences?: Partial<UserPreferences>;
+    stories?: StoryCluster[];
 }
 
 function matchesLane(story: StoryCluster, lane: FeedLane): boolean {
@@ -63,8 +65,9 @@ export function getFeed(options: GetFeedOptions = {}): FeedResponse {
     const category = options.category ?? 'all';
     const location = options.location?.toLowerCase();
     const lane = options.lane ?? 'for-you';
+    const catalog = options.stories ?? storyClusters;
 
-    const stories = storyClusters
+    const stories = catalog
         .filter((story) => {
             if (category !== 'all' && story.category !== category) {
                 return false;
@@ -88,9 +91,11 @@ export function getFeed(options: GetFeedOptions = {}): FeedResponse {
 
     return {
         stories,
+        schemes: getSchemes({ lane }),
         nextCursor: null,
         activeAlerts: options.includeAlerts === false
             ? []
             : alerts.filter((alert) => alert.status !== 'resolved'),
     };
 }
+

@@ -1,16 +1,31 @@
 'use client';
 
 import Link from 'next/link';
-import { storyClusters } from '@/data/fixtures/stories';
+import { useEffect, useState } from 'react';
+import { buildSessionHeaders } from '@/lib/client/api';
 import { appCopy } from '@/lib/client/copy';
+import { useAuth } from '@/lib/AuthContext';
 import { getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
-
-const demoSavedStoryIds = ['story-peshok-road', 'story-school-notice'];
+import { StoryCluster } from '@/types';
 
 export default function SavedPage() {
     const { language, contentLanguage, fallbackLanguage } = useLanguage();
-    const savedStories = storyClusters.filter((story) => demoSavedStoryIds.includes(story.id));
+    const { session } = useAuth();
+    const [savedStories, setSavedStories] = useState<StoryCluster[]>([]);
+
+    useEffect(() => {
+        if (!session || session.isGuest) {
+            setSavedStories([]);
+            return;
+        }
+
+        fetch('/api/feed?saved_only=true', {
+            headers: buildSessionHeaders(session),
+        })
+            .then((response) => response.json())
+            .then((data) => setSavedStories(data.stories ?? []));
+    }, [session]);
 
     return (
         <div className="min-h-screen bg-brand-bg px-4 py-6">
@@ -19,6 +34,8 @@ export default function SavedPage() {
                     <h1 className="text-2xl font-semibold text-brand-ink">{getLocalizedText(appCopy.saved.title, language)}</h1>
                     <p className="mt-2 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.saved.subtitle, language)}</p>
                 </header>
+
+                {!session || session.isGuest ? <Link href="/auth" className="inline-flex text-sm font-medium text-brand-green">{getLocalizedText(appCopy.actions.signIn, language)}</Link> : null}
 
                 <section className="space-y-4">
                     {savedStories.length > 0 ? savedStories.map((story) => (
@@ -33,3 +50,4 @@ export default function SavedPage() {
         </div>
     );
 }
+

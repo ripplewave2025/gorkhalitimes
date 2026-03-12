@@ -1,4 +1,4 @@
-﻿import { FeedLane, Language, LanguageSupportLevel, LocalizedText } from '@/types';
+import { FeedLane, Language, LanguageSupportLevel, LocalizedText } from '@/types';
 
 export interface SupportedLanguage {
     code: Language;
@@ -86,3 +86,4 @@ export function getFeedLaneLabel(lane: FeedLane, language: Language): string {
 
     return getLocalizedText(labels[lane], language);
 }
+

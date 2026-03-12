@@ -12,13 +12,15 @@ export default function AuthPage() {
     const router = useRouter();
     const { language } = useLanguage();
     const { session, requestPhoneOtp, signInAsGuest, signInWithGoogleMock, verifyPhoneOtp } = useAuth();
+    const [name, setName] = useState('GorkhayAI Reader');
+    const [email, setEmail] = useState('reader@example.com');
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [otpRequested, setOtpRequested] = useState(false);
     const [status, setStatus] = useState<string | null>(null);
 
     const handleGoogle = () => {
-        signInWithGoogleMock('GorkhayAI Reader', 'reader@example.com');
+        signInWithGoogleMock(name, email);
         router.push('/');
     };
 
@@ -62,7 +64,9 @@ export default function AuthPage() {
                 <section className="grid gap-4 md:grid-cols-2">
                     <article className="surface-card space-y-4 rounded-[2rem] p-6">
                         <h2 className="text-lg font-semibold text-brand-ink">Google</h2>
-                        <p className="text-sm leading-6 text-brand-muted">{language === 'ne' ? '?? ????? Google ????-?? ??? ?????????? ?????' : 'Google sign-in uses a mock adapter in this phase.'}</p>
+                        <p className="text-sm leading-6 text-brand-muted">{language === 'ne' ? '??? ????????? ???? contributor@..., writer@..., guardian@..., ?? @gorkhayai.com ???? ?????? ???? ???????????' : 'For role testing you can use contributor@..., writer@..., guardian@..., or an @gorkhayai.com email.'}</p>
+                        <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                        <input value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                         <button type="button" onClick={handleGoogle} className="btn-primary justify-center">{getLocalizedText(appCopy.auth.google, language)}</button>
                     </article>
 
@@ -120,3 +124,4 @@ export default function AuthPage() {
         </div>
     );
 }
+

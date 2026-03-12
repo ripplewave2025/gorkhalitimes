@@ -1,4 +1,4 @@
-﻿export type Language = 'ne' | 'en' | 'hi' | 'bn' | 'bo' | 'lep' | 'dz' | 'sher';
+export type Language = 'ne' | 'en' | 'hi' | 'bn' | 'bo' | 'lep' | 'dz' | 'sher';
 export type LanguageSupportLevel = 'production' | 'beta' | 'experimental';
 
 export type FeedLane =
@@ -62,3 +62,4 @@ export type AlertCategory =
 
 export type AlertSeverity = 'high' | 'medium' | 'low';
 export type AlertStatus = 'active' | 'updated' | 'resolved';
+

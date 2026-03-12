@@ -201,3 +201,4 @@ export const trustBadgeLabels: Record<TrustBadge, ByLanguage> = {
 export function staticText(value: string): LocalizedText {
     return { en: value, ne: value };
 }
+

@@ -1,4 +1,4 @@
-﻿import { FeedLane, Language, LocalizedText, StoryCategory, StoryStatus, TrustBadge } from '@/types/common';
+import { FeedLane, Language, LocalizedText, StoryCategory, StoryStatus, TrustBadge } from '@/types/common';
 
 export interface StoryTimelineEntry {
     id: string;
@@ -38,3 +38,4 @@ export interface StoryCluster {
     savedCount: number;
     timeline: StoryTimelineEntry[];
 }
+

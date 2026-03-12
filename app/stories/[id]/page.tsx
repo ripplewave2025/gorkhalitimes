@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -6,6 +6,7 @@ import { guardianNotes } from '@/data/fixtures/notes';
 import { sources } from '@/data/fixtures/sources';
 import { storyClusters } from '@/data/fixtures/stories';
 import ListenButton from '@/components/ListenButton';
+import NoteRatingWidget from '@/components/NoteRatingWidget';
 import { appCopy, trustBadgeLabels } from '@/lib/client/copy';
 import { formatRelativeTime, getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -50,12 +51,16 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
                         <div className="flex flex-wrap gap-3">
                             <ListenButton story={story} />
                             <Link href={`/stories/${story.id}/request-note`} className="btn-secondary">{getLocalizedText(appCopy.actions.requestNote, language)}</Link>
+                            <Link href={`/help?storyId=${story.id}`} className="btn-secondary">{getLocalizedText(appCopy.actions.askForHelp, language)}</Link>
                         </div>
                         {guardianNote ? (
-                            <section className="rounded-[1.5rem] bg-brand-green-soft p-5">
-                                <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.story.guardianNote, language)}</h2>
-                                <p className="mt-3 text-sm leading-6 text-brand-ink">{getLocalizedText(guardianNote.text, contentLanguage, fallbackLanguage)}</p>
-                                <p className="mt-3 text-xs uppercase tracking-[0.16em] text-brand-muted">{guardianNote.confidence}</p>
+                            <section className="space-y-4 rounded-[1.5rem] bg-brand-green-soft p-5">
+                                <div>
+                                    <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.story.guardianNote, language)}</h2>
+                                    <p className="mt-3 text-sm leading-6 text-brand-ink">{getLocalizedText(guardianNote.text, contentLanguage, fallbackLanguage)}</p>
+                                    <p className="mt-3 text-xs uppercase tracking-[0.16em] text-brand-muted">{guardianNote.confidence}</p>
+                                </div>
+                                <NoteRatingWidget noteId={guardianNote.id} />
                             </section>
                         ) : null}
                     </div>
@@ -109,3 +114,4 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
         </div>
     );
 }
+

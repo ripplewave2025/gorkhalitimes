@@ -1,4 +1,4 @@
-﻿generator client {
+generator client {
     provider = "prisma-client-js"
 }
 
@@ -58,34 +58,101 @@ enum NoteStatus {
     superseded
 }
 
+enum SourceHealthStatus {
+    healthy
+    degraded
+    failing
+    unknown
+}
+
+enum HelpRequestStatus {
+    pending
+    in_review
+    completed
+}
+
 model User {
-    id                 String   @id @default(cuid())
+    id                 String         @id @default(cuid())
     name               String
-    phone              String?  @unique
-    email              String?  @unique
-    role               UserRole @default(reader)
-    languagePreference String   @default("en")
+    phone              String?        @unique
+    email              String?        @unique
+    role               UserRole       @default(reader)
+    languagePreference String         @default("ne")
     hometownOptional   String?
-    isPhoneVerified    Boolean  @default(false)
-    status             String   @default("active")
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @updatedAt
+    isPhoneVerified    Boolean        @default(false)
+    status             String         @default("active")
+    preferences        UserPreference?
+    createdAt          DateTime       @default(now())
+    updatedAt          DateTime       @updatedAt
+}
+
+model UserPreference {
+    id                String   @id @default(cuid())
+    userId            String   @unique
+    uiLanguage        String   @default("ne")
+    contentLanguage   String   @default("ne")
+    audioLanguage     String   @default("ne")
+    fallbackLanguage  String   @default("en")
+    preferredPlaces   Json
+    preferredTopics   Json
+    preferredSources  Json
+    mutedSourceIds    Json
+    morningAudioDigest Boolean @default(true)
+    govtSchemesAlerts Boolean @default(true)
+    audioSpeed        Float    @default(1)
+    onboardingComplete Boolean @default(false)
+    recentSearches    Json
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
 }
 
 model Source {
-    id            String    @id @default(cuid())
+    id            String              @id @default(cuid())
     name          String
     type          String
     baseUrl       String
     rssUrl        String?
+    extractorUrl  String?
     trustTier     TrustTier
     language      String
     locationScope String
-    status        String    @default("active")
-    ingestMethod  String?   
+    status        String              @default("active")
+    ingestMethod  String?
     rightsMode    RightsMode
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt
+    tagsJson      Json?
+    createdAt     DateTime            @default(now())
+    updatedAt     DateTime            @updatedAt
+    items         SourceItem[]
+    healthChecks  SourceHealthCheck[]
+}
+
+model SourceItem {
+    id               String   @id @default(cuid())
+    sourceId         String
+    externalId       String?
+    url              String
+    titleRaw         String
+    bodyRaw          String?
+    imageUrl         String?
+    publishedAt      DateTime?
+    fetchedAt        DateTime @default(now())
+    languageDetected String?
+    locationTagsJson Json?
+    categoryTagsJson Json?
+    contentHash      String?
+    status           String   @default("active")
+    source           Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+model SourceHealthCheck {
+    id           String             @id @default(cuid())
+    sourceId     String
+    status       SourceHealthStatus @default(unknown)
+    checkedAt    DateTime           @default(now())
+    lastSuccessAt DateTime?
+    errorMessage String?
+    source       Source             @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 }
 
 model StoryCluster {
@@ -107,6 +174,17 @@ model StoryCluster {
     lastUpdatedAt    DateTime    @updatedAt
 }
 
+model StoryAudio {
+    id              String   @id @default(cuid())
+    clusterId       String
+    language        String
+    voiceName       String?
+    audioUrl        String?
+    durationSec     Int?
+    textVersionHash String?
+    createdAt       DateTime @default(now())
+}
+
 model Alert {
     id                String      @id @default(cuid())
     title             String
@@ -123,10 +201,21 @@ model Alert {
     updatedAt         DateTime    @updatedAt
 }
 
+model NoteRequest {
+    id               String   @id @default(cuid())
+    clusterId        String
+    createdByUserId  String?
+    reason           String
+    detailsNullable  String?
+    evidenceUrlNullable String?
+    status           String   @default("queued")
+    createdAt        DateTime @default(now())
+}
+
 model GuardianNote {
     id               String     @id @default(cuid())
     clusterId        String
-    authorUserId     String
+    authorUserId     String?
     noteType         String
     text             String
     confidence       String
@@ -149,6 +238,43 @@ model NoteRating {
     createdAt             DateTime @default(now())
 }
 
+model GovtScheme {
+    id                   String   @id @default(cuid())
+    title                String
+    whoItsFor            String
+    benefitSummary       String
+    eligibilitySnapshot  String
+    learnMoreUrl         String
+    locationScope        String
+    status               String   @default("active")
+    savedCount           Int      @default(0)
+    helpCount            Int      @default(0)
+    createdAt            DateTime @default(now())
+    updatedAt            DateTime @updatedAt
+    sources              SchemeSource[]
+}
+
+model SchemeSource {
+    id        String     @id @default(cuid())
+    schemeId  String
+    sourceId  String
+    scheme    GovtScheme @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+}
+
+model HelpRequest {
+    id                String            @id @default(cuid())
+    userId            String?
+    kind              String
+    storyClusterId    String?
+    govtSchemeId      String?
+    questionText      String
+    callbackNumber    String?
+    audioFileUrl      String?
+    status            HelpRequestStatus @default(pending)
+    createdAt         DateTime          @default(now())
+    updatedAt         DateTime          @updatedAt
+}
+
 model Save {
     id        String   @id @default(cuid())
     userId    String
@@ -165,3 +291,4 @@ model AuditLog {
     metadataJson Json
     createdAt   DateTime @default(now())
 }
+

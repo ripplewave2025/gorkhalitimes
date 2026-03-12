@@ -1,245 +1,120 @@
-# Gorkha AI - Swipeable News App
+# GorkhayAI
 
-A modern, AI-powered news platform for the Gorkha diaspora with swipeable cards, chat interface, and voice mode in English, Nepali, and Hindi.
+GorkhayAI is a voice-first local intelligence app for the Darjeeling hills. It turns scattered news, alerts, and public updates into a calm, swipeable, source-visible, truth-checked feed.
 
-## ✨ Features
+## What is implemented in Phase 2
 
-- **Swipeable News Feed** - TikTok-style news cards
-- **AI Chat** - Discuss articles and ask questions
-- **Voice Mode** - Hands-free news consumption
-- **Tri-lingual** - Full support for English, नेपाली, and हिंदी
-- **Real-time Language Switching** - Change language and see content update instantly
-- **Mobile-First Design** - Optimized for 96% mobile users
-- **Dark Theme** - Easy on the eyes
+- Nepali-first language defaults for UI, content, and audio preference
+- Expanded language scaffolding: Nepali, English, Hindi, Bengali, Tibetan, Lepcha, Bhutanese / Dzongkha, Sherpa
+- Guest mode plus mock Google sign-in and mock phone OTP sign-in
+- Onboarding flow with language, place, topic, digest, scheme-alert, and audio-speed preferences
+- Sticky top search on Home and Search with lane chips
+- Perplexity-style search results with answer summary, recent searches, and suggestions
+- Immediate browser-based `listen now` playback using Web Speech API fallback
+- Govt Schemes lane with searchable scheme cards and help entry points
+- Guardian Angel Note naming and protected request / draft / rate APIs
+- Voice-help request flow with admin review queue
+- Adapter-based live source ingestion scaffolding with RSS and extractor adapters
+- Source health endpoint and admin views for sources, notes, and help queues
+- Prisma schema expanded for preferences, sources, health checks, schemes, help requests, and notes
+- Test coverage for role checks, note publish rules, feed/search basics, and source adapter selection
 
-## 🚀 Quick Start
+## What remains feature-flagged or mocked
+
+- Google auth and phone OTP use local mock adapters for now
+- Server-generated premium TTS is not integrated yet; browser speech is the current fallback
+- Live source ingestion is behind `ENABLE_LIVE_INGESTION=true`
+- UI usage of API-backed live feed is behind `NEXT_PUBLIC_USE_API_FEED=true`
+- Social-source ingestion is not enabled and remains intentionally excluded from the core architecture
+- Save state for scheme cards is still local UI state; story save state is server-protected mock-session storage
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js 18+ installed
-- npm or yarn package manager
-- Git
+- Node.js 18+
+- npm
 
-### Local Development
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/ripplewave2025/Gorkhalitimes.git
-   cd Gorkhalitimes
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. **Run development server**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 📦 Deploy to Vercel (Recommended)
-
-### Option 1: Deploy from GitHub
-
-1. **Push your code to GitHub** (see instructions below)
-
-2. **Go to Vercel**
-   - Visit [vercel.com](https://vercel.com)
-   - Sign up with GitHub
-
-3. **Import Repository**
-   - Click "Add New Project"
-   - Select your GitHub repository
-   - Click "Import"
-
-4. **Configure & Deploy**
-   - Framework Preset: Next.js (auto-detected)
-   - Root Directory: `./`
-   - Build Command: `npm run build` (auto-filled)
-   - Click "Deploy"
-
-5. **Done!** 
-   - Your app will be live at `https://your-project.vercel.app`
-   - Vercel automatically deploys on every push to main branch
-
-### Option 2: Deploy with Vercel CLI
+### Install
 
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Login to Vercel
-vercel login
-
-# Deploy
-vercel
-
-# Deploy to production
-vercel --prod
+npm install
 ```
 
-## 📤 Push to GitHub
+### Environment variables
 
-### First Time Setup
+Copy `.env.example` to `.env.local` and set what you need.
 
 ```bash
-# Navigate to your project
-cd /path/to/gorkhalitimes
-
-# Initialize git (if not already done)
-git init
-
-# Add all files
-git add .
-
-# Commit
-git commit -m "Initial commit: Gorkha AI news app"
-
-# Add remote repository
-git remote add origin https://github.com/ripplewave2025/Gorkhalitimes.git
-
-# Push to GitHub
-git branch -M main
-git push -u origin main
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gorkhayai"
+ENABLE_LIVE_INGESTION="false"
+NEXT_PUBLIC_USE_API_FEED="false"
 ```
 
-### Future Updates
+### Run locally
 
 ```bash
-# After making changes
-git add .
-git commit -m "Description of changes"
-git push
+npm run dev
 ```
 
-## 🛠️ Tech Stack
+Open [http://localhost:3000](http://localhost:3000).
 
-- **Frontend**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **State Management**: React Context API
-- **Deployment**: Vercel
-- **Future**: Claude API, ElevenLabs TTS
+### Useful role-testing identities
 
-## 📁 Project Structure
+The auth adapter is mock-backed for this phase. These email prefixes unlock roles for testing.
 
-```
-gorkhalitimes/
-├── app/                    # Next.js app directory
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Homepage (feed)
-│   ├── chat/              # Chat interface
-│   ├── voice/             # Voice mode
-│   ├── explore/           # Explore page
-│   └── settings/          # Settings page
-├── components/            # Reusable components
-│   ├── SwipeCard.tsx     # News card
-│   ├── LanguageToggle.tsx
-│   └── BottomNav.tsx
-├── lib/                   # Utilities
-│   ├── translations.ts   # Language data
-│   └── LanguageContext.tsx
-├── types/                 # TypeScript types
-├── public/                # Static assets
-└── package.json
+- `reader@example.com` -> reader
+- `contributor@example.com` -> contributor
+- `writer@example.com` -> note_writer
+- `guardian@example.com` -> guardian
+- `admin@gorkhayai.com` -> admin
+
+Phone numbers ending in `0000` map to guardian in the OTP mock flow.
+The development OTP is `123456`.
+
+## Commands
+
+```bash
+npm run dev
+npm run typecheck
+npm run lint
+npm run test
+npm run build
 ```
 
-## 🌐 Language Support
+## Live-source testing
 
-The app fully supports three languages:
+Set these flags in `.env.local`:
 
-- **English** (`en`)
-- **नेपाली** (`ne`) 
-- **हिंदी** (`hi`)
-
-Language preference is saved to localStorage and persists across sessions.
-
-## 🎨 Customization
-
-### Adding New News Articles
-
-Edit `lib/translations.ts` and add to the `sampleNews` array:
-
-```typescript
-{
-  id: '5',
-  category: 'diaspora',
-  headline: {
-    en: 'Your English headline',
-    ne: 'तपाईंको नेपाली शीर्षक',
-    hi: 'आपकी हिंदी शीर्षक',
-  },
-  summary: {
-    en: 'English summary...',
-    ne: 'नेपाली सारांश...',
-    hi: 'हिंदी सारांश...',
-  },
-  timeAgo: '1 hour ago',
-  factChecked: true,
-  imageUrl: 'https://images.unsplash.com/...',
-}
+```bash
+ENABLE_LIVE_INGESTION="true"
+NEXT_PUBLIC_USE_API_FEED="true"
 ```
 
-### Changing Colors/Theme
+Current seeded live-source adapters include:
 
-Edit `tailwind.config.ts` to customize brand colors:
+- Darjeeling District Administration
+- GTA Information Cell
+- Kalimpong DM Office
+- MyScheme India
+- India Meteorological Department
+- Hills Brief (RSS placeholder)
+- Radio Hills (extractor placeholder)
+- Tea Board Hills Desk
 
-```typescript
-theme: {
-  extend: {
-    colors: {
-      'brand-blue': '#1e3a8a',  // Change this
-      'brand-light': '#3b82f6', // And this
-    },
-  },
-},
-```
+The ingestion layer prefers RSS or approved extractor URLs. It does not rely on broad social scraping.
 
-## 🔮 Next Steps (Phase 2)
+## Repo structure
 
-- [ ] Integrate Claude API for real AI responses
-- [ ] Add ElevenLabs for text-to-speech
-- [ ] Connect to real news RSS feeds
-- [ ] Implement actual swipe gestures (Framer Motion)
-- [ ] Add user authentication
-- [ ] Create admin panel for content management
-- [ ] Add fact-checking integration
-- [ ] Build mobile apps (React Native)
+- `app/` Next.js App Router pages and API routes
+- `components/` reusable UI building blocks
+- `data/fixtures/` seeded content, notes, sources, and schemes
+- `lib/client/` browser audio, language, and request helpers
+- `lib/server/` feed, search, notes, saves, help, and ingestion logic
+- `prisma/schema.prisma` domain schema scaffold
+- `tests/` unit and integration tests
 
-## 🐛 Known Issues
+## Notes
 
-- Swipe gestures use buttons (not touch) - will add Hammer.js later
-- Chat responses are demo only - needs Claude API
-- Voice mode is UI only - needs Web Speech API integration
-- Images are placeholders - will add real images
+Read [IMPLEMENTATION_NOTES.md](./IMPLEMENTATION_NOTES.md) for assumptions, tradeoffs, and next steps.
 
-## 📄 License
-
-MIT License - feel free to use this for your project!
-
-## 🙏 Credits
-
-Built with love for the Gorkha diaspora community.
-
----
-
-## 🆘 Need Help?
-
-If you run into issues:
-
-1. **Check Node.js version**: `node -v` (should be 18+)
-2. **Clear cache**: `rm -rf .next node_modules && npm install`
-3. **Vercel docs**: https://vercel.com/docs
-4. **Next.js docs**: https://nextjs.org/docs
-
-## 📞 Contact
-
-Questions? Open an issue on GitHub or reach out to the community!

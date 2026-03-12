@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/**/*.test.ts"
   },
   "dependencies": {
     "framer-motion": "^11.0.3",
@@ -29,3 +31,4 @@
     "zod": "^4.3.6"
   }
 }
+

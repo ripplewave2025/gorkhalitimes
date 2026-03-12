@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { storyClusters } from '@/data/fixtures/stories';
+import { ingestLiveStories } from '@/lib/server/ingest/run-ingestion';
 import { searchStories } from '@/lib/server/search/search-stories';
 import { FeedLane } from '@/types';
 
@@ -10,13 +12,19 @@ function parseList(value: string | null): string[] {
     return value.split(',').map((item) => item.trim()).filter(Boolean);
 }
 
-export function GET(request: NextRequest) {
+export async function GET(request: NextRequest) {
     const query = request.nextUrl.searchParams.get('q') ?? '';
     const lane = (request.nextUrl.searchParams.get('lane') as FeedLane | null) ?? 'for-you';
+    const liveStories = process.env.ENABLE_LIVE_INGESTION === 'true'
+        ? (await ingestLiveStories()).stories
+        : [];
+
     return NextResponse.json(searchStories(query, {
         lane,
+        stories: [...liveStories, ...storyClusters],
         preferences: {
             preferredPlaces: parseList(request.nextUrl.searchParams.get('preferred_places')),
         },
     }));
 }
+

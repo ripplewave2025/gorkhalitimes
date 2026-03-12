@@ -1,8 +1,11 @@
 ﻿'use client';
 
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
+import { buildSessionHeaders } from '@/lib/client/api';
 import { appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
+import { useAuth } from '@/lib/AuthContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import { NoteType } from '@/types';
 
@@ -19,21 +22,27 @@ const noteReasons: NoteType[] = [
 
 export default function RequestNotePage({ params }: { params: { id: string } }) {
     const { language } = useLanguage();
+    const { session } = useAuth();
     const [reason, setReason] = useState<NoteType>('missing-context');
     const [details, setDetails] = useState('');
     const [evidenceUrl, setEvidenceUrl] = useState('');
-    const [submitted, setSubmitted] = useState(false);
+    const [submitted, setSubmitted] = useState<string | null>(null);
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
-        await fetch(`/api/stories/${params.id}/request-note`, {
+        const response = await fetch(`/api/stories/${params.id}/request-note`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reason, details, evidenceUrl }),
+            headers: {
+                'Content-Type': 'application/json',
+                ...buildSessionHeaders(session),
+            },
+            body: JSON.stringify({ reason, details, evidenceUrl: evidenceUrl || undefined }),
         });
 
-        setSubmitted(true);
+        setSubmitted(response.ok
+            ? getLocalizedText(appCopy.notes.requestSuccess, language)
+            : (language === 'ne' ? '?? ????? ???? ????-?? ?????? ??' : 'Sign in is required for this action.'));
     };
 
     return (
@@ -49,12 +58,14 @@ export default function RequestNotePage({ params }: { params: { id: string } }) 
                             <option key={item} value={item}>{item}</option>
                         ))}
                     </select>
-                    <textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={5} placeholder={language === 'ne' ? 'के मिलेन?' : 'What looks incorrect or incomplete?'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={5} placeholder={language === 'ne' ? '?? ??????' : 'What looks incorrect or incomplete?'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                     <input value={evidenceUrl} onChange={(event) => setEvidenceUrl(event.target.value)} placeholder="https://" className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                     <button type="submit" className="btn-primary">{getLocalizedText(appCopy.actions.submit, language)}</button>
-                    {submitted ? <p className="text-sm text-brand-green">{language === 'ne' ? 'नोट अनुरोध पठाइयो।' : 'Guardian Note request submitted.'}</p> : null}
+                    {!session || session.isGuest ? <Link href="/auth" className="inline-flex text-sm font-medium text-brand-green">{getLocalizedText(appCopy.actions.signIn, language)}</Link> : null}
+                    {submitted ? <p className="text-sm text-brand-green">{submitted}</p> : null}
                 </form>
             </div>
         </div>
     );
 }
+

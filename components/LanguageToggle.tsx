@@ -17,7 +17,7 @@ export default function LanguageToggle({ mode = 'compact' }: LanguageToggleProps
                     <label key={item.code} className="flex items-center justify-between gap-3 rounded-2xl border border-brand-line bg-white px-4 py-3 text-sm text-brand-ink">
                         <span>
                             <span className="block font-medium">{item.nativeLabel}</span>
-                            <span className="block text-xs text-brand-muted">{item.label} • {item.supportLevel}</span>
+                            <span className="block text-xs text-brand-muted">{item.label} â€¢ {item.supportLevel}</span>
                         </span>
                         <input
                             type="radio"
@@ -42,3 +42,4 @@ export default function LanguageToggle({ mode = 'compact' }: LanguageToggleProps
         </label>
     );
 }
+

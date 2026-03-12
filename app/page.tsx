@@ -2,20 +2,22 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MapPin } from 'lucide-react';
 import AlertsBanner from '@/components/AlertsBanner';
 import LaneChips from '@/components/LaneChips';
 import LanguageToggle from '@/components/LanguageToggle';
+import SchemeCard from '@/components/SchemeCard';
 import SearchBar from '@/components/SearchBar';
 import StoryCard from '@/components/StoryCard';
 import { appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
 import { getFeed } from '@/lib/server/feed/get-feed';
-import { FeedLane } from '@/types';
-import { useRouter } from 'next/navigation';
+import { FeedLane, FeedResponse } from '@/types';
 
 const lanes: FeedLane[] = ['for-you', 'top-stories', 'alerts', 'tea', 'roads', 'govt-schemes', 'jobs', 'schools', 'weather', 'economy'];
+const useApiFeed = process.env.NEXT_PUBLIC_USE_API_FEED === 'true';
 
 export default function HomePage() {
     const router = useRouter();
@@ -23,8 +25,37 @@ export default function HomePage() {
     const [activeLane, setActiveLane] = useState<FeedLane>('for-you');
     const [currentIndex, setCurrentIndex] = useState(0);
     const [query, setQuery] = useState('');
+    const [remoteFeed, setRemoteFeed] = useState<FeedResponse | null>(null);
 
-    const filteredStories = getFeed({ lane: activeLane, preferences }).stories;
+    useEffect(() => {
+        if (!useApiFeed) {
+            return;
+        }
+
+        const params = new URLSearchParams({ lane: activeLane });
+        if (preferences.preferredPlaces.length > 0) {
+            params.set('preferred_places', preferences.preferredPlaces.join(','));
+        }
+        if (preferences.preferredTopics.length > 0) {
+            params.set('preferred_topics', preferences.preferredTopics.join(','));
+        }
+        if (preferences.mutedSourceIds.length > 0) {
+            params.set('muted_sources', preferences.mutedSourceIds.join(','));
+        }
+        if (preferences.preferredSources.length > 0) {
+            params.set('preferred_sources', preferences.preferredSources.join(','));
+        }
+        params.set('govt_schemes_alerts', String(preferences.govtSchemesAlerts));
+
+        fetch(`/api/feed?${params.toString()}`)
+            .then((response) => response.json())
+            .then((data) => setRemoteFeed(data));
+    }, [activeLane, preferences]);
+
+    const fallbackFeed = getFeed({ lane: activeLane, preferences });
+    const feedData = useApiFeed && remoteFeed ? remoteFeed : fallbackFeed;
+    const filteredStories = feedData.stories;
+    const schemes = feedData.schemes;
 
     useEffect(() => {
         if (currentIndex >= filteredStories.length) {
@@ -98,6 +129,14 @@ export default function HomePage() {
                     {getLocalizedText(appCopy.feed.personalized, language)}
                 </section>
 
+                {schemes.length > 0 ? (
+                    <section className="space-y-4">
+                        {schemes.slice(0, activeLane === 'govt-schemes' ? schemes.length : 1).map((scheme) => (
+                            <SchemeCard key={scheme.id} scheme={scheme} />
+                        ))}
+                    </section>
+                ) : null}
+
                 {story ? <StoryCard story={story} onNext={() => setCurrentIndex((index) => Math.min(index + 1, filteredStories.length - 1))} onPrevious={() => setCurrentIndex((index) => Math.max(index - 1, 0))} /> : null}
 
                 <section className="surface-card rounded-[2rem] p-5">
@@ -115,3 +154,4 @@ export default function HomePage() {
         </div>
     );
 }
+

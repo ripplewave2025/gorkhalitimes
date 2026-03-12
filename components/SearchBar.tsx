@@ -32,3 +32,4 @@ export default function SearchBar({ value, placeholder, onChange, onSubmit, stic
         </form>
     );
 }
+

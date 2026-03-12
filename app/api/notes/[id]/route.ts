@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-import { guardianNotes } from '@/data/fixtures/notes';
+﻿import { NextResponse } from 'next/server';
+import { getGuardianAngelNoteById } from '@/lib/server/notes/store';
 
 export function GET(_: Request, context: { params: { id: string } }) {
-    const note = guardianNotes.find((item) => item.id === context.params.id);
+    const note = getGuardianAngelNoteById(context.params.id);
 
     if (!note) {
         return NextResponse.json({ message: 'Note not found' }, { status: 404 });
@@ -10,3 +10,4 @@ export function GET(_: Request, context: { params: { id: string } }) {
 
     return NextResponse.json(note);
 }
+

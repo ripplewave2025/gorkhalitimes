@@ -28,3 +28,4 @@ export default function LaneChips({ activeLane, onChange, lanes }: LaneChipsProp
         </section>
     );
 }
+

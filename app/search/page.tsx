@@ -1,30 +1,48 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import LaneChips from '@/components/LaneChips';
+import SchemeCard from '@/components/SchemeCard';
 import SearchBar from '@/components/SearchBar';
 import { categoryLabels, appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
 import { searchStories } from '@/lib/server/search/search-stories';
-import { FeedLane } from '@/types';
+import { FeedLane, SearchResponse } from '@/types';
 
 const lanes: FeedLane[] = ['for-you', 'top-stories', 'alerts', 'tea', 'roads', 'govt-schemes', 'jobs', 'schools', 'weather', 'economy'];
+const useApiFeed = process.env.NEXT_PUBLIC_USE_API_FEED === 'true';
 
-export default function SearchPage() {
+function SearchPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { language, contentLanguage, fallbackLanguage, preferences, addRecentSearch } = useLanguage();
     const [query, setQuery] = useState(searchParams.get('q') ?? '');
     const [activeLane, setActiveLane] = useState<FeedLane>('for-you');
+    const [remoteSearch, setRemoteSearch] = useState<SearchResponse | null>(null);
 
     useEffect(() => {
         setQuery(searchParams.get('q') ?? '');
     }, [searchParams]);
 
-    const results = searchStories(query, { lane: activeLane, preferences });
+    useEffect(() => {
+        if (!useApiFeed) {
+            return;
+        }
+
+        const params = new URLSearchParams({ q: query, lane: activeLane });
+        if (preferences.preferredPlaces.length > 0) {
+            params.set('preferred_places', preferences.preferredPlaces.join(','));
+        }
+        fetch(`/api/search?${params.toString()}`)
+            .then((response) => response.json())
+            .then((data) => setRemoteSearch(data));
+    }, [activeLane, preferences.preferredPlaces, query]);
+
+    const fallbackSearch = searchStories(query, { lane: activeLane, preferences });
+    const results = useApiFeed && remoteSearch ? remoteSearch : fallbackSearch;
 
     const handleSearch = () => {
         addRecentSearch(query);
@@ -91,6 +109,14 @@ export default function SearchPage() {
                     </section>
                 )}
 
+                {results.schemes.length > 0 ? (
+                    <section className="space-y-4">
+                        {results.schemes.map((scheme) => (
+                            <SchemeCard key={scheme.id} scheme={scheme} />
+                        ))}
+                    </section>
+                ) : null}
+
                 <section className="space-y-4">
                     {results.stories.map((story) => (
                         <Link key={story.id} href={`/stories/${story.id}`} className="surface-card block rounded-[2rem] p-5">
@@ -110,5 +136,13 @@ export default function SearchPage() {
                 </section>
             </div>
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-brand-bg px-4 py-6 text-sm text-brand-muted">Loading search...</div>}>
+            <SearchPageContent />
+        </Suspense>
     );
 }

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AppSession, UserRole } from '@/types';
@@ -18,12 +18,22 @@ const OTP_KEY = 'gorkhayai-otp';
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function resolveRoleFromIdentity(email?: string, phone?: string): UserRole {
-    if (email?.endsWith('@gorkhayai.com')) {
-        return 'admin';
+    const normalizedEmail = email?.toLowerCase();
+
+    if (normalizedEmail?.startsWith('guardian@') || phone?.endsWith('0000')) {
+        return 'guardian';
     }
 
-    if (phone?.endsWith('0000')) {
-        return 'guardian';
+    if (normalizedEmail?.startsWith('writer@')) {
+        return 'note_writer';
+    }
+
+    if (normalizedEmail?.startsWith('contributor@')) {
+        return 'contributor';
+    }
+
+    if (normalizedEmail?.endsWith('@gorkhayai.com')) {
+        return 'admin';
     }
 
     return 'reader';
@@ -86,9 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signInWithGoogleMock = (name?: string, email?: string) => {
-        const resolvedEmail = email?.trim() || 'reader@gorkhayai.com';
+        const resolvedEmail = email?.trim() || 'reader@example.com';
         setSession({
-            id: 'google-user',
+            id: `google-${resolvedEmail}`,
             name: name?.trim() || 'GorkhayAI Reader',
             email: resolvedEmail,
             role: resolveRoleFromIdentity(resolvedEmail),
@@ -132,3 +142,4 @@ export function useAuth() {
 
     return context;
 }
+

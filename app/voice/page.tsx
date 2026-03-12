@@ -1,17 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PauseCircle, PlayCircle, Volume2 } from 'lucide-react';
 import { appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { storyAudioService } from '@/lib/client/audio';
 import { useLanguage } from '@/lib/LanguageContext';
 import { getFeed } from '@/lib/server/feed/get-feed';
+import { FeedResponse } from '@/types';
+
+const useApiFeed = process.env.NEXT_PUBLIC_USE_API_FEED === 'true';
 
 export default function VoicePage() {
     const { language, audioLanguage, preferences, updatePreferences } = useLanguage();
     const [playingId, setPlayingId] = useState<string | null>(null);
-    const playlist = getFeed({ lane: 'top-stories', preferences }).stories.slice(0, 5);
+    const [remoteFeed, setRemoteFeed] = useState<FeedResponse | null>(null);
+
+    useEffect(() => {
+        if (!useApiFeed) {
+            return;
+        }
+
+        const params = new URLSearchParams({ lane: 'top-stories' });
+        if (preferences.preferredPlaces.length > 0) {
+            params.set('preferred_places', preferences.preferredPlaces.join(','));
+        }
+        fetch(`/api/feed?${params.toString()}`)
+            .then((response) => response.json())
+            .then((data) => setRemoteFeed(data));
+    }, [preferences.preferredPlaces]);
+
+    const playlist = (useApiFeed && remoteFeed ? remoteFeed : getFeed({ lane: 'top-stories', preferences })).stories.slice(0, 5);
 
     const handleToggle = (storyId: string) => {
         const story = playlist.find((item) => item.id === storyId);
@@ -75,7 +94,7 @@ export default function VoicePage() {
                                 <div>
                                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">{language === 'ne' ? `??????? ${index + 1}` : `Track ${index + 1}`}</p>
                                     <h2 className="mt-2 text-lg font-semibold text-brand-ink">{getLocalizedText(story.headline, audioLanguage)}</h2>
-                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} • {story.audioStatus ?? 'browser-fallback'}</p>
+                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} â€¢ {story.audioStatus ?? 'browser-fallback'}</p>
                                 </div>
                                 {isPlaying ? <PauseCircle size={30} className="text-brand-green" /> : <PlayCircle size={30} className="text-brand-green" />}
                             </button>
@@ -86,3 +105,4 @@ export default function VoicePage() {
         </div>
     );
 }
+

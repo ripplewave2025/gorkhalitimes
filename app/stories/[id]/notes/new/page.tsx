@@ -1,8 +1,11 @@
 ﻿'use client';
 
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
+import { buildSessionHeaders } from '@/lib/client/api';
 import { appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
+import { useAuth } from '@/lib/AuthContext';
 import { useLanguage } from '@/lib/LanguageContext';
 import { ConfidenceLevel, NoteType } from '@/types';
 
@@ -16,27 +19,34 @@ const noteTypes: NoteType[] = [
 
 export default function WriteNotePage({ params }: { params: { id: string } }) {
     const { language } = useLanguage();
+    const { session } = useAuth();
     const [noteType, setNoteType] = useState<NoteType>('missing-context');
     const [confidence, setConfidence] = useState<ConfidenceLevel>('medium');
     const [text, setText] = useState('');
-    const [sourceLinks, setSourceLinks] = useState('');
-    const [submitted, setSubmitted] = useState(false);
+    const [sourceLinks, setSourceLinks] = useState('https://darjeeling.gov.in');
+    const [submitted, setSubmitted] = useState<string | null>(null);
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
-        await fetch(`/api/stories/${params.id}/notes`, {
+        const response = await fetch(`/api/stories/${params.id}/notes`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                ...buildSessionHeaders(session),
+            },
             body: JSON.stringify({
                 noteType,
                 confidence,
+                language: 'ne',
                 text,
                 sourceLinks: sourceLinks.split(',').map((item) => item.trim()).filter(Boolean),
             }),
         });
 
-        setSubmitted(true);
+        setSubmitted(response.ok
+            ? getLocalizedText(appCopy.notes.draftSuccess, language)
+            : (language === 'ne' ? '??? ????? note_writer ?? ???????? ?????? ????????' : 'Note writer or higher role required.'));
     };
 
     return (
@@ -57,12 +67,14 @@ export default function WriteNotePage({ params }: { params: { id: string } }) {
                         <option value="medium">medium</option>
                         <option value="developing">developing</option>
                     </select>
-                    <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} placeholder={language === 'ne' ? '१–३ वाक्यको तटस्थ नोट लेख्नुहोस्' : 'Write a neutral note in 1-3 sentences'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
-                    <input value={sourceLinks} onChange={(event) => setSourceLinks(event.target.value)} placeholder={language === 'ne' ? 'कम्माले छुट्याएर स्रोत लिंक राख्नुहोस्' : 'Comma-separated source links'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} placeholder={language === 'ne' ? '?–? ??????? ????? ??? ??????????' : 'Write a neutral note in 1-3 sentences'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <input value={sourceLinks} onChange={(event) => setSourceLinks(event.target.value)} placeholder={language === 'ne' ? '??????? ???????? ????? ???? ??????????' : 'Comma-separated source links'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                     <button type="submit" className="btn-primary">{getLocalizedText(appCopy.actions.submit, language)}</button>
-                    {submitted ? <p className="text-sm text-brand-green">{language === 'ne' ? 'ड्राफ्ट नोट पठाइयो।' : 'Draft note submitted.'}</p> : null}
+                    {!session || session.isGuest ? <Link href="/auth" className="inline-flex text-sm font-medium text-brand-green">{getLocalizedText(appCopy.actions.signIn, language)}</Link> : null}
+                    {submitted ? <p className="text-sm text-brand-green">{submitted}</p> : null}
                 </form>
             </div>
         </div>
     );
 }
+

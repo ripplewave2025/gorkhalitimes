@@ -18,7 +18,7 @@ function LanguageSelect({ label, value, onChange }: { label: string; value: Lang
             <span className="font-medium">{label}</span>
             <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
                 {SUPPORTED_LANGUAGES.map((item) => (
-                    <option key={item.code} value={item.code}>{item.nativeLabel} • {item.supportLevel}</option>
+                    <option key={item.code} value={item.code}>{item.nativeLabel} â€¢ {item.supportLevel}</option>
                 ))}
             </select>
         </label>
@@ -118,7 +118,7 @@ export default function MorePage() {
                         <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.more.account, language)}</h2>
                         <p className="mt-2 text-sm leading-6 text-brand-muted">
                             {session
-                                ? `${session.name} • ${session.role} • ${session.authMethod}`
+                                ? `${session.name} â€¢ ${session.role} â€¢ ${session.authMethod}`
                                 : (language === 'ne' ? '??? ???? ????' : 'No active session.')}
                         </p>
                     </div>
@@ -131,3 +131,4 @@ export default function MorePage() {
         </div>
     );
 }
+

@@ -1,4 +1,4 @@
-﻿import { Language, FeedLane } from '@/types/common';
+import { Language, FeedLane } from '@/types/common';
 
 export type UserRole = 'guest' | 'reader' | 'contributor' | 'note_writer' | 'guardian' | 'admin';
 export type AuthMethod = 'guest' | 'google' | 'phone';
@@ -36,3 +36,4 @@ export interface AppSession {
     phone?: string;
     isGuest: boolean;
 }
+

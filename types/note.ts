@@ -1,4 +1,4 @@
-﻿import { ConfidenceLevel, LocalizedText, NoteRatingValue, NoteType } from '@/types/common';
+import { ConfidenceLevel, LocalizedText, NoteRatingValue, NoteType } from '@/types/common';
 
 export interface GuardianNote {
     id: string;
@@ -7,9 +7,11 @@ export interface GuardianNote {
     text: LocalizedText;
     confidence: ConfidenceLevel;
     sourceIds: string[];
-    publishedAt: string;
+    sourceLinks?: string[];
+    publishedAt: string | null;
     updatedAt: string;
     fastTracked: boolean;
+    status: 'draft' | 'under_review' | 'published' | 'rejected';
 }
 
 export interface NoteRequestPayload {
@@ -18,9 +20,23 @@ export interface NoteRequestPayload {
     evidenceUrl?: string;
 }
 
+export interface NoteRequestRecord extends NoteRequestPayload {
+    id: string;
+    clusterId: string;
+    createdBySessionId: string;
+    createdAt: string;
+    status: 'queued' | 'reviewed';
+}
+
 export interface NoteRating {
     noteId: string;
     ratingValue: NoteRatingValue;
+}
+
+export interface NoteRatingRecord extends NoteRating {
+    id: string;
+    userId: string;
+    createdAt: string;
 }
 
 export interface NotePublishStats {
@@ -33,3 +49,4 @@ export interface NotePublishStats {
     toxicOrOpinionated: boolean;
     guardianApproved: boolean;
 }
+
