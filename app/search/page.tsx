@@ -62,6 +62,7 @@ function SearchPageContent() {
                     onChange={setQuery}
                     onSubmit={handleSearch}
                     placeholder={getLocalizedText(appCopy.search.placeholder, language)}
+                    submitLabel={getLocalizedText(appCopy.actions.go, language)}
                     sticky
                 />
 
@@ -82,25 +83,35 @@ function SearchPageContent() {
                             <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.search.recent, language)}</h2>
                             <div className="mt-4 flex flex-wrap gap-2">
                                 {preferences.recentSearches.length > 0 ? preferences.recentSearches.map((item) => (
-                                    <button key={item} type="button" onClick={() => {
-                                        setQuery(item);
-                                        addRecentSearch(item);
-                                        router.push(`/search?q=${encodeURIComponent(item)}`);
-                                    }} className="chip">
+                                    <button
+                                        key={item}
+                                        type="button"
+                                        onClick={() => {
+                                            setQuery(item);
+                                            addRecentSearch(item);
+                                            router.push(`/search?q=${encodeURIComponent(item)}`);
+                                        }}
+                                        className="chip"
+                                    >
                                         {item}
                                     </button>
-                                )) : <p className="text-sm text-brand-muted">{language === 'ne' ? '????????? ??? ?????? ????' : 'No search history yet.'}</p>}
+                                )) : <p className="text-sm text-brand-muted">{language === 'ne' ? 'अहिलेसम्म खोज इतिहास छैन।' : 'No search history yet.'}</p>}
                             </div>
                         </article>
                         <article className="surface-card rounded-[2rem] p-5">
                             <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.search.suggestions, language)}</h2>
                             <div className="mt-4 flex flex-wrap gap-2">
                                 {results.suggestedQueries.map((item) => (
-                                    <button key={item} type="button" onClick={() => {
-                                        setQuery(item);
-                                        addRecentSearch(item);
-                                        router.push(`/search?q=${encodeURIComponent(item)}`);
-                                    }} className="chip">
+                                    <button
+                                        key={item}
+                                        type="button"
+                                        onClick={() => {
+                                            setQuery(item);
+                                            addRecentSearch(item);
+                                            router.push(`/search?q=${encodeURIComponent(item)}`);
+                                        }}
+                                        className="chip"
+                                    >
                                         {item}
                                     </button>
                                 ))}

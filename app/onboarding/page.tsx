@@ -26,7 +26,7 @@ function LanguageSelect({
             <span className="font-medium">{label}</span>
             <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
                 {SUPPORTED_LANGUAGES.map((item) => (
-                    <option key={item.code} value={item.code}>{item.nativeLabel} • {item.supportLevel}</option>
+                    <option key={item.code} value={item.code}>{item.nativeLabel} · {item.supportLevel}</option>
                 ))}
             </select>
         </label>
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
 
                 <section className="grid gap-4 md:grid-cols-2">
                     <article className="surface-card space-y-4 rounded-[2rem] p-6">
-                        <h2 className="text-xl font-semibold text-brand-ink">{language === 'ne' ? '???? ??????????' : 'Language preferences'}</h2>
+                        <h2 className="text-xl font-semibold text-brand-ink">{language === 'ne' ? 'भाषा प्राथमिकता' : 'Language preferences'}</h2>
                         <LanguageSelect label={getLocalizedText(appCopy.more.uiLanguage, language)} value={uiLanguage} onChange={setUiLanguage} />
                         <LanguageSelect label={getLocalizedText(appCopy.more.contentLanguage, language)} value={contentLanguage} onChange={setContentLanguage} />
                         <LanguageSelect label={getLocalizedText(appCopy.more.audioLanguage, language)} value={audioLanguage} onChange={setAudioLanguage} />
@@ -94,7 +94,7 @@ export default function OnboardingPage() {
                     </article>
 
                     <article className="surface-card space-y-4 rounded-[2rem] p-6">
-                        <h2 className="text-xl font-semibold text-brand-ink">{language === 'ne' ? '?????? ??? ???????????' : 'Tune your daily brief'}</h2>
+                        <h2 className="text-xl font-semibold text-brand-ink">{language === 'ne' ? 'आजको ब्रीफ मिलाउनुहोस्' : 'Tune your daily brief'}</h2>
                         <label className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3">
                             <span>{getLocalizedText(appCopy.more.morningDigest, language)}</span>
                             <input type="checkbox" checked={preferences.morningAudioDigest} onChange={() => updatePreferences({ morningAudioDigest: !preferences.morningAudioDigest })} />
@@ -140,8 +140,8 @@ export default function OnboardingPage() {
                 <section className="surface-card flex flex-col gap-3 rounded-[2rem] p-6 md:flex-row md:items-center md:justify-between">
                     <div className="text-sm leading-6 text-brand-muted">
                         {session && !session.isGuest
-                            ? (language === 'ne' ? `??? ????-??: ${session.name}` : `Signed in as ${session.name}`)
-                            : (language === 'ne' ? '????? ????? ????? ????? ??????????' : 'You are currently in guest mode.')}
+                            ? (language === 'ne' ? `साइन इन: ${session.name}` : `Signed in as ${session.name}`)
+                            : (language === 'ne' ? 'तपाईं अहिले अतिथि मोडमा हुनुहुन्छ।' : 'You are currently in guest mode.')}
                     </div>
                     <div className="flex flex-wrap gap-3">
                         <Link href="/auth" className="btn-secondary justify-center">{getLocalizedText(appCopy.actions.signIn, language)}</Link>
@@ -152,4 +152,3 @@ export default function OnboardingPage() {
         </div>
     );
 }
-

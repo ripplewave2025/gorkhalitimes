@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Headphones, PauseCircle } from 'lucide-react';
+import { appCopy } from '@/lib/client/copy';
+import { getLocalizedText } from '@/lib/client/language';
 import { storyAudioService } from '@/lib/client/audio';
 import { useLanguage } from '@/lib/LanguageContext';
 import { StoryCluster } from '@/types';
@@ -40,8 +42,9 @@ export default function ListenButton({ story }: ListenButtonProps) {
     return (
         <button type="button" onClick={handleToggle} className="btn-primary justify-center">
             {isPlaying ? <PauseCircle size={16} /> : <Headphones size={16} />}
-            {isPlaying ? (audioLanguage === 'ne' ? '??????????' : 'Stop') : (audioLanguage === 'ne' ? '????? ??????????' : 'Listen now')}
+            {isPlaying
+                ? getLocalizedText(appCopy.actions.stop, audioLanguage)
+                : getLocalizedText(appCopy.actions.listen, audioLanguage)}
         </button>
     );
 }
-

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,19 +20,21 @@ export default function BottomNav() {
     const { language } = useLanguage();
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-brand-line bg-brand-bg/95 backdrop-blur-md">
-            <div className="mx-auto flex h-20 max-w-3xl items-center justify-around px-3 py-2 bottom-safe">
-                {navItems.map((item) => {
-                    const isActive = pathname === item.href;
-                    const Icon = item.icon;
+        <nav className="pointer-events-none fixed bottom-0 left-0 right-0 z-50 px-3 pb-3">
+            <div className="pointer-events-auto mx-auto max-w-3xl rounded-[1.9rem] border border-white/8 bg-brand-bg/88 p-2 shadow-[0_22px_48px_rgba(0,0,0,0.42)] backdrop-blur-xl bottom-safe">
+                <div className="flex items-center justify-around gap-1">
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.href;
+                        const Icon = item.icon;
 
-                    return (
-                        <Link key={item.href} href={item.href} className={isActive ? 'nav-item nav-item-active' : 'nav-item'}>
-                            <Icon size={20} />
-                            <span>{getLocalizedText(item.label, language)}</span>
-                        </Link>
-                    );
-                })}
+                        return (
+                            <Link key={item.href} href={item.href} className={isActive ? 'nav-item nav-item-active' : 'nav-item'}>
+                                <Icon size={20} />
+                                <span>{getLocalizedText(item.label, language)}</span>
+                            </Link>
+                        );
+                    })}
+                </div>
             </div>
         </nav>
     );

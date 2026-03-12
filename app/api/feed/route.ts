@@ -15,6 +15,7 @@ function parseList(value: string | null): string[] {
 }
 
 export async function GET(request: NextRequest) {
+    const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
     const searchParams = request.nextUrl.searchParams;
     const category = (searchParams.get('category') as StoryCategory | 'all' | null) ?? 'all';
     const location = searchParams.get('location') ?? undefined;
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
     };
 
     let catalog = [...storyClusters];
-    if (process.env.ENABLE_LIVE_INGESTION === 'true') {
+    if (!demoMode && process.env.ENABLE_LIVE_INGESTION === 'true') {
         const live = await ingestLiveStories();
         catalog = [...live.stories, ...catalog];
     }

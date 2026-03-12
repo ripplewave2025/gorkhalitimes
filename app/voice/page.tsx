@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { PauseCircle, PlayCircle, Volume2 } from 'lucide-react';
-import { appCopy } from '@/lib/client/copy';
+import { appCopy, audioStatusLabels } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { storyAudioService } from '@/lib/client/audio';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -92,9 +92,9 @@ export default function VoicePage() {
                         return (
                             <button key={story.id} type="button" onClick={() => handleToggle(story.id)} className="surface-card flex w-full items-start justify-between rounded-[2rem] p-5 text-left">
                                 <div>
-                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">{language === 'ne' ? `??????? ${index + 1}` : `Track ${index + 1}`}</p>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">{getLocalizedText(appCopy.voice.track, language)} {index + 1}</p>
                                     <h2 className="mt-2 text-lg font-semibold text-brand-ink">{getLocalizedText(story.headline, audioLanguage)}</h2>
-                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} • {story.audioStatus ?? 'browser-fallback'}</p>
+                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} • {getLocalizedText(audioStatusLabels[story.audioStatus ?? 'browser-fallback'], language)}</p>
                                 </div>
                                 {isPlaying ? <PauseCircle size={30} className="text-brand-green" /> : <PlayCircle size={30} className="text-brand-green" />}
                             </button>
@@ -105,4 +105,3 @@ export default function VoicePage() {
         </div>
     );
 }
-

@@ -44,8 +44,8 @@ export default function AuthPage() {
         event.preventDefault();
         const isValid = await verifyPhoneOtp(phone.trim(), otp.trim());
         setStatus(isValid
-            ? (language === 'ne' ? '??? ????-?? ??? ????' : 'Phone sign-in succeeded.')
-            : (language === 'ne' ? 'OTP ??????' : 'OTP did not match.'));
+            ? (language === 'ne' ? 'फोन साइन-इन सफल भयो।' : 'Phone sign-in succeeded.')
+            : (language === 'ne' ? 'OTP मिलेन।' : 'OTP did not match.'));
 
         if (isValid) {
             router.push('/');
@@ -64,7 +64,11 @@ export default function AuthPage() {
                 <section className="grid gap-4 md:grid-cols-2">
                     <article className="surface-card space-y-4 rounded-[2rem] p-6">
                         <h2 className="text-lg font-semibold text-brand-ink">Google</h2>
-                        <p className="text-sm leading-6 text-brand-muted">{language === 'ne' ? '??? ????????? ???? contributor@..., writer@..., guardian@..., ?? @gorkhayai.com ???? ?????? ???? ???????????' : 'For role testing you can use contributor@..., writer@..., guardian@..., or an @gorkhayai.com email.'}</p>
+                        <p className="text-sm leading-6 text-brand-muted">
+                            {language === 'ne'
+                                ? 'भूमिका परीक्षणका लागि contributor@..., writer@..., guardian@... वा @gorkhayai.com इमेल प्रयोग गर्न सक्नुहुन्छ।'
+                                : 'For role testing you can use contributor@..., writer@..., guardian@..., or an @gorkhayai.com email.'}
+                        </p>
                         <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                         <input value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                         <button type="button" onClick={handleGoogle} className="btn-primary justify-center">{getLocalizedText(appCopy.auth.google, language)}</button>
@@ -76,7 +80,7 @@ export default function AuthPage() {
                             <input
                                 value={phone}
                                 onChange={(event) => setPhone(event.target.value)}
-                                placeholder={language === 'ne' ? '??? ?????' : 'Phone number'}
+                                placeholder={language === 'ne' ? 'फोन नम्बर' : 'Phone number'}
                                 className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
                             />
                             {otpRequested ? (
@@ -87,9 +91,9 @@ export default function AuthPage() {
                                     className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
                                 />
                             ) : null}
-                            <button type="submit" className="btn-secondary justify-center w-full">
+                            <button type="submit" className="btn-secondary w-full justify-center">
                                 {otpRequested
-                                    ? (language === 'ne' ? 'OTP ???????? ?????????' : 'Verify OTP')
+                                    ? getLocalizedText(appCopy.actions.verifyOtp, language)
                                     : getLocalizedText(appCopy.auth.phone, language)}
                             </button>
                         </form>
@@ -100,8 +104,12 @@ export default function AuthPage() {
                 <section className="surface-card rounded-[2rem] p-6">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <h2 className="text-lg font-semibold text-brand-ink">{language === 'ne' ? '????? ???' : 'Guest mode'}</h2>
-                            <p className="mt-2 text-sm leading-6 text-brand-muted">{language === 'ne' ? '???, ??? ? ???? ????? ????? ????-?? ?????? ????' : 'Home, search, and Voice Today are open without sign-in.'}</p>
+                            <h2 className="text-lg font-semibold text-brand-ink">{language === 'ne' ? 'अतिथि मोड' : 'Guest mode'}</h2>
+                            <p className="mt-2 text-sm leading-6 text-brand-muted">
+                                {language === 'ne'
+                                    ? 'होम, खोज र आजको आवाज साइन इन नगरी पनि खुला छन्।'
+                                    : 'Home, search, and Voice Today are open without sign-in.'}
+                            </p>
                         </div>
                         <button type="button" onClick={handleGuest} className="btn-secondary justify-center">{getLocalizedText(appCopy.auth.guest, language)}</button>
                     </div>
@@ -110,7 +118,7 @@ export default function AuthPage() {
                 {session ? (
                     <section className="surface-card rounded-[2rem] p-6 text-sm leading-6 text-brand-muted">
                         {language === 'ne'
-                            ? `????? ????: ${session.name} (${session.role})`
+                            ? `हालको सेसन: ${session.name} (${session.role})`
                             : `Current session: ${session.name} (${session.role})`}
                     </section>
                 ) : null}
@@ -118,10 +126,9 @@ export default function AuthPage() {
                 {status ? <p className="text-sm text-brand-green">{status}</p> : null}
 
                 <Link href="/onboarding" className="inline-flex text-sm font-medium text-brand-green hover:text-brand-green-dark">
-                    {language === 'ne' ? '????? ?????????? ?????? ???????????' : 'Want to set preferences first?'}
+                    {language === 'ne' ? 'पहिले रुचि सेट गर्न चाहनुहुन्छ?' : 'Want to set preferences first?'}
                 </Link>
             </div>
         </div>
     );
 }
-

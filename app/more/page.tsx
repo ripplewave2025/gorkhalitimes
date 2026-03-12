@@ -18,7 +18,7 @@ function LanguageSelect({ label, value, onChange }: { label: string; value: Lang
             <span className="font-medium">{label}</span>
             <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
                 {SUPPORTED_LANGUAGES.map((item) => (
-                    <option key={item.code} value={item.code}>{item.nativeLabel} • {item.supportLevel}</option>
+                    <option key={item.code} value={item.code}>{item.nativeLabel} · {item.supportLevel}</option>
                 ))}
             </select>
         </label>
@@ -83,7 +83,7 @@ export default function MorePage() {
                                 value={placesInput}
                                 onChange={(event) => setPlacesInput(event.target.value)}
                                 onBlur={() => updatePreferences({ preferredPlaces: placesInput.split(',').map((item) => item.trim()).filter(Boolean) })}
-                                placeholder={language === 'ne' ? '?????????, ?????????, ?????' : 'Darjeeling, Kurseong, Peshok'}
+                                placeholder={language === 'ne' ? 'दार्जिलिङ, कर्सियाङ, पेसोक' : 'Darjeeling, Kurseong, Peshok'}
                                 className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
                             />
                         </label>
@@ -103,7 +103,11 @@ export default function MorePage() {
 
                 <section className="surface-card rounded-[2rem] p-5">
                     <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.more.mutedSources, language)}</h2>
-                    <p className="mt-2 text-sm leading-6 text-brand-muted">{language === 'ne' ? '???? ?????? ????? ????? ???? ??????, ???? ??? ????? ?? ???????' : 'This softly de-prioritizes a source instead of hard-blocking the feed.'}</p>
+                    <p className="mt-2 text-sm leading-6 text-brand-muted">
+                        {language === 'ne'
+                            ? 'यसले स्रोतलाई पूर्ण रोक्दैन, फिडमा मात्र कम प्राथमिकता दिन्छ।'
+                            : 'This softly de-prioritizes a source instead of hard-blocking the feed.'}
+                    </p>
                     <div className="mt-4 flex flex-wrap gap-2">
                         {sources.map((source) => (
                             <button key={source.id} type="button" onClick={() => toggleMutedSource(source.id)} className={preferences.mutedSourceIds.includes(source.id) ? 'pill-active' : 'pill-muted border border-brand-line bg-white'}>
@@ -118,8 +122,8 @@ export default function MorePage() {
                         <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.more.account, language)}</h2>
                         <p className="mt-2 text-sm leading-6 text-brand-muted">
                             {session
-                                ? `${session.name} • ${session.role} • ${session.authMethod}`
-                                : (language === 'ne' ? '??? ???? ????' : 'No active session.')}
+                                ? `${session.name} · ${session.role} · ${session.authMethod}`
+                                : (language === 'ne' ? 'सक्रिय सेसन छैन।' : 'No active session.')}
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-3">
@@ -131,4 +135,3 @@ export default function MorePage() {
         </div>
     );
 }
-

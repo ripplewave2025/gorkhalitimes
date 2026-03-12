@@ -13,29 +13,38 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
     { code: 'hi', label: 'Hindi', nativeLabel: 'हिन्दी', supportLevel: 'beta' },
     { code: 'bn', label: 'Bengali', nativeLabel: 'বাংলা', supportLevel: 'beta' },
     { code: 'bo', label: 'Tibetan', nativeLabel: 'བོད་ཡིག', supportLevel: 'experimental' },
-    { code: 'lep', label: 'Lepcha', nativeLabel: 'ᰛᰧᰵ', supportLevel: 'experimental' },
-    { code: 'dz', label: 'Bhutanese / Dzongkha', nativeLabel: 'རྫོང་ཁ', supportLevel: 'experimental' },
+    { code: 'lep', label: 'Lepcha', nativeLabel: 'Lepcha', supportLevel: 'experimental' },
+    { code: 'dz', label: 'Dzongkha', nativeLabel: 'རྫོང་ཁ', supportLevel: 'experimental' },
     { code: 'sher', label: 'Sherpa', nativeLabel: 'Sherpa', supportLevel: 'experimental' },
 ];
 
-export const DEFAULT_LANGUAGE = 'ne';
+export const DEFAULT_LANGUAGE: Language = 'ne';
 
-const fallbackOrder = ['ne', 'en', 'hi', 'bn', 'bo', 'lep', 'dz', 'sher'] as const;
+const fallbackOrder: readonly Language[] = ['en', 'ne', 'hi', 'bn', 'bo', 'dz', 'lep', 'sher'];
 
-export function getLocalizedText(value: LocalizedText, language: Language, fallbackLanguage: Language = 'en'): string {
+export function getLocalizedText(
+    value: LocalizedText | undefined,
+    language: Language,
+    fallbackLanguage: Language = 'en',
+): string {
+    if (!value) {
+        return '';
+    }
+
     const direct = value[language];
-    if (direct) {
+    if (direct?.trim()) {
         return direct;
     }
 
     const fallback = value[fallbackLanguage];
-    if (fallback) {
+    if (fallback?.trim()) {
         return fallback;
     }
 
     for (const candidate of fallbackOrder) {
-        if (value[candidate]) {
-            return value[candidate] as string;
+        const candidateValue = value[candidate];
+        if (candidateValue?.trim()) {
+            return candidateValue;
         }
     }
 
@@ -70,20 +79,19 @@ export function formatRelativeTime(timestamp: string, language: Language): strin
     return relativeFormatters[language].format(diffDays, 'day');
 }
 
+const laneLabels: Record<FeedLane, LocalizedText> = {
+    'for-you': { ne: 'तपाईंका लागि', en: 'For You' },
+    'top-stories': { ne: 'मुख्य कथा', en: 'Top Stories' },
+    alerts: { ne: 'अलर्ट', en: 'Alerts' },
+    tea: { ne: 'चिया', en: 'Tea' },
+    roads: { ne: 'सडक', en: 'Roads' },
+    'govt-schemes': { ne: 'सरकारी योजना', en: 'Govt Schemes' },
+    jobs: { ne: 'रोजगार', en: 'Jobs' },
+    schools: { ne: 'विद्यालय', en: 'Schools' },
+    weather: { ne: 'मौसम', en: 'Weather' },
+    economy: { ne: 'अर्थतन्त्र', en: 'Economy' },
+};
+
 export function getFeedLaneLabel(lane: FeedLane, language: Language): string {
-    const labels: Record<FeedLane, LocalizedText> = {
-        'for-you': { ne: 'तपाईंका लागि', en: 'For You' },
-        'top-stories': { ne: 'मुख्य कथा', en: 'Top Stories' },
-        alerts: { ne: 'अलर्ट', en: 'Alerts' },
-        tea: { ne: 'चिया', en: 'Tea' },
-        roads: { ne: 'सडक', en: 'Roads' },
-        'govt-schemes': { ne: 'सरकारी योजना', en: 'Govt Schemes' },
-        jobs: { ne: 'रोजगार', en: 'Jobs' },
-        schools: { ne: 'विद्यालय', en: 'Schools' },
-        weather: { ne: 'मौसम', en: 'Weather' },
-        economy: { ne: 'अर्थतन्त्र', en: 'Economy' },
-    };
-
-    return getLocalizedText(labels[lane], language);
+    return getLocalizedText(laneLabels[lane], language);
 }
-

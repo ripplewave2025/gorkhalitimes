@@ -9,17 +9,17 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                'brand-bg': '#f5f2ea',
-                'brand-surface': '#fffdf8',
-                'brand-line': '#ddd6c6',
-                'brand-ink': '#1f2a20',
-                'brand-muted': '#66715f',
-                'brand-green': '#486a51',
-                'brand-green-dark': '#33513d',
-                'brand-green-soft': '#e6efe7',
+                'brand-bg': 'rgb(var(--brand-bg-rgb) / <alpha-value>)',
+                'brand-surface': 'rgb(var(--brand-surface-rgb) / <alpha-value>)',
+                'brand-line': 'rgb(var(--brand-line-rgb) / <alpha-value>)',
+                'brand-ink': 'rgb(var(--brand-ink-rgb) / <alpha-value>)',
+                'brand-muted': 'rgb(var(--brand-muted-rgb) / <alpha-value>)',
+                'brand-green': 'rgb(var(--brand-green-rgb) / <alpha-value>)',
+                'brand-green-dark': 'rgb(var(--brand-green-dark-rgb) / <alpha-value>)',
+                'brand-green-soft': 'rgba(78, 203, 133, 0.16)',
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
+                sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
             },
         },
     },

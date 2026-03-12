@@ -13,9 +13,10 @@ function parseList(value: string | null): string[] {
 }
 
 export async function GET(request: NextRequest) {
+    const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
     const query = request.nextUrl.searchParams.get('q') ?? '';
     const lane = (request.nextUrl.searchParams.get('lane') as FeedLane | null) ?? 'for-you';
-    const liveStories = process.env.ENABLE_LIVE_INGESTION === 'true'
+    const liveStories = !demoMode && process.env.ENABLE_LIVE_INGESTION === 'true'
         ? (await ingestLiveStories()).stories
         : [];
 

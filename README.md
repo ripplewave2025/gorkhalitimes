@@ -1,34 +1,66 @@
 # GorkhayAI
 
-GorkhayAI is a voice-first local intelligence app for the Darjeeling hills. It turns scattered news, alerts, and public updates into a calm, swipeable, source-visible, truth-checked feed.
+GorkhayAI is a voice-first local intelligence app for the Darjeeling hills. It turns scattered news, alerts, schemes, and public updates into a calm, swipeable, source-visible feed.
 
-## What is implemented in Phase 2
+## Demo-ready now
 
-- Nepali-first language defaults for UI, content, and audio preference
-- Expanded language scaffolding: Nepali, English, Hindi, Bengali, Tibetan, Lepcha, Bhutanese / Dzongkha, Sherpa
-- Guest mode plus mock Google sign-in and mock phone OTP sign-in
-- Onboarding flow with language, place, topic, digest, scheme-alert, and audio-speed preferences
-- Sticky top search on Home and Search with lane chips
-- Perplexity-style search results with answer summary, recent searches, and suggestions
-- Immediate browser-based `listen now` playback using Web Speech API fallback
-- Govt Schemes lane with searchable scheme cards and help entry points
-- Guardian Angel Note naming and protected request / draft / rate APIs
-- Voice-help request flow with admin review queue
-- Adapter-based live source ingestion scaffolding with RSS and extractor adapters
-- Source health endpoint and admin views for sources, notes, and help queues
-- Prisma schema expanded for preferences, sources, health checks, schemes, help requests, and notes
-- Test coverage for role checks, note publish rules, feed/search basics, and source adapter selection
+- Nepali-first UI with repaired Unicode content and Devanagari-safe typography
+- Swipeable Home feed with alert strip, lane chips, story cards, source pills, and Guardian Angel Note context
+- Search, Story Detail, Voice Today, Saved, Help, onboarding, auth, and settings flows working end-to-end
+- Govt Schemes cards with practical summary, eligibility snapshot, save, learn-more, and help actions
+- Browser speech fallback for story listening and Voice Today
+- Adapter-based live ingestion path behind flags
+- Reliable investor demo mode that stays polished even if live sources fail
 
-## What remains feature-flagged or mocked
+## Still mocked or deferred
 
-- Google auth and phone OTP use local mock adapters for now
-- Server-generated premium TTS is not integrated yet; browser speech is the current fallback
-- Live source ingestion is behind `ENABLE_LIVE_INGESTION=true`
-- UI usage of API-backed live feed is behind `NEXT_PUBLIC_USE_API_FEED=true`
-- Social-source ingestion is not enabled and remains intentionally excluded from the core architecture
-- Save state for scheme cards is still local UI state; story save state is server-protected mock-session storage
+- Google OAuth and phone OTP provider are mock adapters
+- Premium server TTS is not integrated; browser speech remains the default
+- Telephony and production voice ingestion are not wired
+- Persistence is still partly fixture-backed even though schema and API shapes are in place
 
-## Getting started
+## Feature flags
+
+Set in `.env.local`:
+
+```bash
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gorkhayai"
+ENABLE_LIVE_INGESTION="false"
+NEXT_PUBLIC_USE_API_FEED="false"
+NEXT_PUBLIC_DEMO_MODE="true"
+```
+
+- `NEXT_PUBLIC_DEMO_MODE=true`: forces the polished seeded demo path and skips live ingestion entirely. Use this for the investor demo.
+- `NEXT_PUBLIC_USE_API_FEED=true`: makes the UI fetch from API routes instead of reading seeded data directly in the client.
+- `ENABLE_LIVE_INGESTION=true`: enables live source ingestion inside the API feed/search path. Keep this `false` for the safest demo.
+
+## Recommended modes
+
+### Investor demo mode
+
+Use:
+
+```bash
+NEXT_PUBLIC_DEMO_MODE="true"
+NEXT_PUBLIC_USE_API_FEED="false"
+ENABLE_LIVE_INGESTION="false"
+```
+
+This gives the most reliable experience locally and avoids live-source surprises.
+
+### Live source rehearsal
+
+Use:
+
+```bash
+NEXT_PUBLIC_DEMO_MODE="false"
+NEXT_PUBLIC_USE_API_FEED="true"
+ENABLE_LIVE_INGESTION="true"
+```
+
+This exercises the API-backed live path and source health behavior.
+
+## Run locally
 
 ### Prerequisites
 
@@ -41,27 +73,23 @@ GorkhayAI is a voice-first local intelligence app for the Darjeeling hills. It t
 npm install
 ```
 
-### Environment variables
-
-Copy `.env.example` to `.env.local` and set what you need.
-
-```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gorkhayai"
-ENABLE_LIVE_INGESTION="false"
-NEXT_PUBLIC_USE_API_FEED="false"
-```
-
-### Run locally
+### Start
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open `http://localhost:3000`.
 
-### Useful role-testing identities
+## Best 3-minute demo path
 
-The auth adapter is mock-backed for this phase. These email prefixes unlock roles for testing.
+1. Open Home and show the Nepali-first hero, alert strip, lane chips, and source-visible story card.
+2. Open the Peshok story and show the Guardian Angel Note, confidence context, and listen-now action.
+3. Show Search with a query like `पेसोक` or `tea`.
+4. Open Voice Today and play a top story with browser speech.
+5. Return to Home or Search and open a Govt Schemes card, then show the help CTA.
+
+## Useful testing identities
 
 - `reader@example.com` -> reader
 - `contributor@example.com` -> contributor
@@ -70,51 +98,28 @@ The auth adapter is mock-backed for this phase. These email prefixes unlock role
 - `admin@gorkhayai.com` -> admin
 
 Phone numbers ending in `0000` map to guardian in the OTP mock flow.
-The development OTP is `123456`.
+Development OTP: `123456`.
 
-## Commands
+## Validation commands
 
 ```bash
-npm run dev
+npm run test
 npm run typecheck
 npm run lint
-npm run test
 npm run build
 ```
 
-## Live-source testing
+## Next API-powered phase
 
-Set these flags in `.env.local`:
+1. Replace mock auth with real OAuth and OTP providers.
+2. Move saved stories, notes, help requests, and preferences onto persistent Postgres storage.
+3. Add scheduled live ingestion plus source moderation tooling.
+4. Add server-side Nepali TTS behind the existing audio abstraction.
+5. Expand translation quality beyond Nepali and English.
 
-```bash
-ENABLE_LIVE_INGESTION="true"
-NEXT_PUBLIC_USE_API_FEED="true"
-```
+## Docs for continuation
 
-Current seeded live-source adapters include:
-
-- Darjeeling District Administration
-- GTA Information Cell
-- Kalimpong DM Office
-- MyScheme India
-- India Meteorological Department
-- Hills Brief (RSS placeholder)
-- Radio Hills (extractor placeholder)
-- Tea Board Hills Desk
-
-The ingestion layer prefers RSS or approved extractor URLs. It does not rely on broad social scraping.
-
-## Repo structure
-
-- `app/` Next.js App Router pages and API routes
-- `components/` reusable UI building blocks
-- `data/fixtures/` seeded content, notes, sources, and schemes
-- `lib/client/` browser audio, language, and request helpers
-- `lib/server/` feed, search, notes, saves, help, and ingestion logic
-- `prisma/schema.prisma` domain schema scaffold
-- `tests/` unit and integration tests
-
-## Notes
-
-Read [IMPLEMENTATION_NOTES.md](./IMPLEMENTATION_NOTES.md) for assumptions, tradeoffs, and next steps.
-
+- [PLAN.md](./PLAN.md)
+- [STATUS.md](./STATUS.md)
+- [IMPLEMENTATION_NOTES.md](./IMPLEMENTATION_NOTES.md)
+- [SOURCE_STRATEGY.md](./SOURCE_STRATEGY.md)

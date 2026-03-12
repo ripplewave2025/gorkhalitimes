@@ -1,32 +1,60 @@
-﻿# Implementation Notes
+# Implementation Notes
 
 ## Safe defaults used
 
-- Nepali is the default UI, content, and audio language everywhere.
-- Extra languages are scaffolded in settings and onboarding, but only Nepali and English have broad copy coverage today. Hindi and Bengali are partially ready through fallback. Tibetan, Lepcha, Dzongkha, and Sherpa are marked experimental and currently fall back to available content.
-- Auth is adapter-shaped but locally mocked so Phase 2 remains runnable without Clerk, Firebase, Twilio, or Google OAuth setup.
-- Browser speech synthesis is the default listen-now path until server-side TTS is connected.
-- Live source ingestion is feature-flagged to keep local development deterministic and build-safe.
+- Nepali remains the default UI, content, and audio language.
+- Auth is adapter-shaped but locally mocked so the app runs without paid providers.
+- Browser speech synthesis is the default no-API listen-now path.
+- Live ingestion remains feature-flagged so local development stays deterministic unless explicitly enabled.
+- Investor demo mode is now a first-class path that bypasses live ingestion completely.
 
-## Tradeoffs made in this phase
+## Continuation plan from commit 528d15d
 
-- Story save state is protected and session-backed through API routes, but scheme save state is still local UI state.
-- Guardian Angel Note lifecycle is conservative and server-checked, but new published notes are not yet fully persisted to a database.
-- Live ingestion uses a lightweight RSS parser and HTML metadata extractor instead of a heavier extraction stack. This keeps cost and setup low, but extraction quality will vary by source.
-- Some admin pages are thin operational views instead of full moderation dashboards.
-- The Prisma schema is expanded for Phase 2, but Prisma client generation and migrations are not wired yet because the runtime still uses fixture-backed services.
+This continuation focused on closing the investor-demo blockers that remained after the ingestion polish run:
 
-## Feature flags
+1. Repair the broken language layer and Nepali rendering completely.
+2. Align typography and theme tokens so the dark-first UI renders consistently.
+3. Add a reliable demo-safe mode that does not depend on live ingestion.
+4. Tighten the Home, Story Detail, Voice, Govt Schemes, and Guardian Angel Note surfaces.
 
-- `ENABLE_LIVE_INGESTION=true` enables live source ingestion in the feed/search APIs.
-- `NEXT_PUBLIC_USE_API_FEED=true` makes Home, Search, and Voice Today consume the API-backed feed/search instead of local-only helpers.
+## What changed in this continuation
 
-## Recommended next steps
+### Language and typography repair
 
-1. Replace mock auth with Clerk or Auth.js plus a real OTP provider.
-2. Persist notes, help requests, saves, and preferences in PostgreSQL through Prisma.
-3. Add source approval tooling and a real ingest scheduler around the adapter layer.
-4. Replace browser speech fallback with cached server-generated Nepali audio for top stories.
-5. Expand multilingual copy coverage beyond Nepali and English.
-6. Add proper file/audio upload storage for voice-help submissions.
+- Replaced corrupted Nepali strings in the shared app copy, language registry, route-level strings, and seeded content.
+- Repaired native language labels and safe fallback behavior for non-complete locales.
+- Moved the app onto script-aware fonts using `next/font/google` with Devanagari and Bengali coverage.
+- Aligned Tailwind theme tokens with the dark-first CSS token set so the UI no longer renders as a broken light/dark hybrid.
 
+### Demo-safe product path
+
+- Added `NEXT_PUBLIC_DEMO_MODE` and wired it into feed/search API routes.
+- Demo mode now serves the polished seeded story/scheme/alert set and skips live ingestion entirely.
+- Live mode still exists behind `NEXT_PUBLIC_USE_API_FEED=true` and `ENABLE_LIVE_INGESTION=true`.
+
+### Product polish
+
+- Refined the floating bottom nav, scheme cards, story cards, and Guardian Angel Note presentation.
+- Localized note request, note writing, help, auth, onboarding, search, and voice flows.
+- Replaced raw enum/status text with proper localized labels where users see them.
+
+## Visual verification
+
+- Ran the app locally in demo mode.
+- Captured Playwright mobile screenshots for Home, Search, Story Detail, Voice, and Settings surfaces.
+- Verified the repaired Nepali UI is readable and consistent across the main demo path.
+
+## Remaining tradeoffs
+
+- Real auth, OTP, telephony, and server TTS still need credentials and production integration.
+- Live extraction quality still depends on source HTML/RSS stability and should be treated as rehearsal mode, not the safest demo mode.
+- The hero imagery still uses remote images; the UI degrades gracefully when they fail, but local packaged media would make a later demo build even more robust.
+- Non-Nepali translations still fall back gracefully rather than being fully localized.
+
+## Recommended next phase with API access
+
+1. Replace mock auth with real providers behind the existing adapter boundary.
+2. Move saves, notes, help requests, and preferences to persistent Postgres-backed storage.
+3. Add a scheduler and moderation tooling for live ingestion.
+4. Add server-side Nepali TTS behind the current browser-fallback abstraction.
+5. Run a proper multilingual translation pass for Hindi, Bengali, Tibetan, Dzongkha, and Sherpa.

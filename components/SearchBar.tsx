@@ -6,12 +6,13 @@ import { Search } from 'lucide-react';
 interface SearchBarProps {
     value: string;
     placeholder: string;
+    submitLabel: string;
     onChange: (value: string) => void;
     onSubmit: () => void;
     sticky?: boolean;
 }
 
-export default function SearchBar({ value, placeholder, onChange, onSubmit, sticky = false }: SearchBarProps) {
+export default function SearchBar({ value, placeholder, submitLabel, onChange, onSubmit, sticky = false }: SearchBarProps) {
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         onSubmit();
@@ -27,7 +28,7 @@ export default function SearchBar({ value, placeholder, onChange, onSubmit, stic
                     placeholder={placeholder}
                     className="w-full bg-transparent text-sm text-brand-ink outline-none"
                 />
-                <button type="submit" className="pill-active text-xs">Go</button>
+                <button type="submit" className="pill-active text-xs">{submitLabel}</button>
             </div>
         </form>
     );

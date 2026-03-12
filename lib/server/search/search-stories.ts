@@ -53,7 +53,7 @@ export function searchStories(
         answerSummary: stories.length || schemes.length
             ? {
                 en: `${stories.length} relevant story clusters and ${schemes.length} scheme cards found. ${sourceCount} visible sources remain in the result set.`,
-                ne: `${stories.length} ??? ??? ? ${schemes.length} ??? ????? ????? ?????? ??????? ${sourceCount} ??? ????? ??????????`,
+                ne: `${stories.length} वटा सम्बन्धित कथा र ${schemes.length} वटा योजना कार्ड भेटिए। ${sourceCount} वटा देखिने स्रोत परिणाममा छन्।`,
             }
             : null,
         stories,

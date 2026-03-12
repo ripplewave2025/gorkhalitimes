@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { buildSessionHeaders } from '@/lib/client/api';
-import { appCopy } from '@/lib/client/copy';
+import { appCopy, confidenceLabels, noteTypeLabels } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { useAuth } from '@/lib/AuthContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -16,6 +16,8 @@ const noteTypes: NoteType[] = [
     'translation-issue',
     'resolved-update',
 ];
+
+const confidenceLevels: ConfidenceLevel[] = ['high', 'medium', 'developing'];
 
 export default function WriteNotePage({ params }: { params: { id: string } }) {
     const { language } = useLanguage();
@@ -46,7 +48,7 @@ export default function WriteNotePage({ params }: { params: { id: string } }) {
 
         setSubmitted(response.ok
             ? getLocalizedText(appCopy.notes.draftSuccess, language)
-            : (language === 'ne' ? '??? ????? note_writer ?? ???????? ?????? ????????' : 'Note writer or higher role required.'));
+            : (language === 'ne' ? 'कम्तीमा note_writer भूमिका चाहिन्छ।' : 'Note writer or higher role required.'));
     };
 
     return (
@@ -59,16 +61,16 @@ export default function WriteNotePage({ params }: { params: { id: string } }) {
                 <form onSubmit={handleSubmit} className="surface-card space-y-4 rounded-[2rem] p-5">
                     <select value={noteType} onChange={(event) => setNoteType(event.target.value as NoteType)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
                         {noteTypes.map((item) => (
-                            <option key={item} value={item}>{item}</option>
+                            <option key={item} value={item}>{getLocalizedText(noteTypeLabels[item], language)}</option>
                         ))}
                     </select>
                     <select value={confidence} onChange={(event) => setConfidence(event.target.value as ConfidenceLevel)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
-                        <option value="high">high</option>
-                        <option value="medium">medium</option>
-                        <option value="developing">developing</option>
+                        {confidenceLevels.map((item) => (
+                            <option key={item} value={item}>{getLocalizedText(confidenceLabels[item], language)}</option>
+                        ))}
                     </select>
-                    <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} placeholder={language === 'ne' ? '?–? ??????? ????? ??? ??????????' : 'Write a neutral note in 1-3 sentences'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
-                    <input value={sourceLinks} onChange={(event) => setSourceLinks(event.target.value)} placeholder={language === 'ne' ? '??????? ???????? ????? ???? ??????????' : 'Comma-separated source links'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} placeholder={language === 'ne' ? 'तटस्थ शैलीमा १–३ वाक्य लेख्नुहोस्।' : 'Write a neutral note in 1-3 sentences'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <input value={sourceLinks} onChange={(event) => setSourceLinks(event.target.value)} placeholder={language === 'ne' ? 'अल्पविरामले छुट्याइएका स्रोत लिंकहरू' : 'Comma-separated source links'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
                     <button type="submit" className="btn-primary">{getLocalizedText(appCopy.actions.submit, language)}</button>
                     {!session || session.isGuest ? <Link href="/auth" className="inline-flex text-sm font-medium text-brand-green">{getLocalizedText(appCopy.actions.signIn, language)}</Link> : null}
                     {submitted ? <p className="text-sm text-brand-green">{submitted}</p> : null}
@@ -77,4 +79,3 @@ export default function WriteNotePage({ params }: { params: { id: string } }) {
         </div>
     );
 }
-

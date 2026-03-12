@@ -30,7 +30,7 @@ function HelpPageContent() {
 
     const handleRecord = async () => {
         if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-            setStatus(language === 'ne' ? '???????? ??????? ???? ???? ????? ??????????' : 'Recording is not supported here. Upload a file instead.');
+            setStatus(language === 'ne' ? 'यहाँ रेकर्डिङ समर्थित छैन। साटोमा अडियो फाइल अपलोड गर्नुहोस्।' : 'Recording is not supported here. Upload a file instead.');
             return;
         }
 
@@ -63,11 +63,11 @@ function HelpPageContent() {
         });
 
         if (!response.ok) {
-            setStatus(language === 'ne' ? '????? ?????? ????? ????-?? ????????' : 'Sign in is required before submitting a help request.');
+            setStatus(language === 'ne' ? 'सहायता अनुरोध पठाउन साइन इन चाहिन्छ।' : 'Sign in is required before submitting a help request.');
             return;
         }
 
-        setStatus(language === 'ne' ? '????? ?????? ???????' : 'Help request submitted.');
+        setStatus(language === 'ne' ? 'सहायता अनुरोध पठाइयो।' : 'Help request submitted.');
         setQuestionText('');
     };
 
@@ -84,21 +84,23 @@ function HelpPageContent() {
                         value={questionText}
                         onChange={(event) => setQuestionText(event.target.value)}
                         rows={5}
-                        placeholder={language === 'ne' ? '?? ????? ?????? ??' : 'What do you need help understanding?'}
+                        placeholder={language === 'ne' ? 'के कुरा बुझ्न मद्दत चाहिन्छ?' : 'What do you need help understanding?'}
                         className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
                     />
                     <input
                         value={callbackNumber}
                         onChange={(event) => setCallbackNumber(event.target.value)}
-                        placeholder={language === 'ne' ? '??????? ????? (????????)' : 'Callback number (optional)'}
+                        placeholder={language === 'ne' ? 'फिर्ता फोन नम्बर (वैकल्पिक)' : 'Callback number (optional)'}
                         className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
                     />
                     <div className="flex flex-wrap gap-3">
                         <button type="button" onClick={handleRecord} className="btn-secondary justify-center">
-                            {isRecording ? (language === 'ne' ? '???????? ??????????' : 'Stop recording') : (language === 'ne' ? '???? ?????? ?????????' : 'Record voice question')}
+                            {isRecording
+                                ? (language === 'ne' ? 'रेकर्डिङ रोक्नुहोस्' : 'Stop recording')
+                                : (language === 'ne' ? 'आवाजमा प्रश्न रेकर्ड गर्नुहोस्' : 'Record voice question')}
                         </button>
                         <label className="btn-secondary cursor-pointer justify-center">
-                            {language === 'ne' ? '????? ???? ?????' : 'Upload audio file'}
+                            {language === 'ne' ? 'अडियो फाइल अपलोड गर्नुहोस्' : 'Upload audio file'}
                             <input type="file" accept="audio/*" className="hidden" onChange={(event) => setAudioFileName(event.target.files?.[0]?.name ?? '')} />
                         </label>
                     </div>

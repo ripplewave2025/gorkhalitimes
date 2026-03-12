@@ -8,7 +8,7 @@ import ListenButton from '@/components/ListenButton';
 import { guardianNotes } from '@/data/fixtures/notes';
 import { sources } from '@/data/fixtures/sources';
 import { buildSessionHeaders } from '@/lib/client/api';
-import { categoryLabels, trustBadgeLabels, appCopy } from '@/lib/client/copy';
+import { audioStatusLabels, categoryLabels, trustBadgeLabels, appCopy } from '@/lib/client/copy';
 import { formatRelativeTime, getLocalizedText } from '@/lib/client/language';
 import { useAuth } from '@/lib/AuthContext';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -51,24 +51,26 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
         });
 
         if (!response.ok) {
-            setSaveMessage(language === 'ne' ? '??? ??? ???? ????-?? ????????' : 'Sign in is required to save stories.');
+            setSaveMessage(language === 'ne' ? 'कथा सेभ गर्न साइन इन चाहिन्छ।' : 'Sign in is required to save stories.');
             return;
         }
 
         setSaved((current) => !current);
-        setSaveMessage(language === 'ne' ? '??? ???? ????? ????' : 'Saved list updated.');
+        setSaveMessage(language === 'ne' ? 'सेभ गरिएको सूची अपडेट भयो।' : 'Saved list updated.');
     };
 
     return (
         <article className="surface-card overflow-hidden rounded-[2rem]">
             <div className="relative h-[22rem] w-full overflow-hidden md:h-[26rem]">
                 <Image src={story.heroImageUrl} alt={getLocalizedText(story.headline, contentLanguage, fallbackLanguage)} fill className="object-cover" priority />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-brand-ink/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
                 <div className="absolute left-4 right-4 top-4 flex flex-wrap items-center gap-2">
                     <span className={`trust-pill trust-${story.trustBadge}`}>{getLocalizedText(trustBadgeLabels[story.trustBadge], language)}</span>
                     <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-brand-ink">{getLocalizedText(categoryLabels[story.category], language)}</span>
                     {guardianNote ? <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-medium text-white">{getLocalizedText(appCopy.story.guardianNote, language)}</span> : null}
-                    <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-brand-ink">{story.audioStatus ?? 'browser-fallback'}</span>
+                    <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-brand-ink">
+                        {getLocalizedText(audioStatusLabels[story.audioStatus ?? 'browser-fallback'], language)}
+                    </span>
                 </div>
                 <div className="absolute right-4 top-1/2 flex -translate-y-1/2 flex-col gap-3">
                     <button type="button" onClick={onNext} className="icon-float" aria-label="Next story">
@@ -90,7 +92,7 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                     <span>•</span>
                     <span>{story.sourceIds.length} {getLocalizedText(appCopy.story.sourceVisible, language)}</span>
                     <span>•</span>
-                    <span>{story.savedCount} saves</span>
+                    <span>{story.savedCount} {getLocalizedText(appCopy.actions.save, language)}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {storySources.map((source) => (
@@ -104,6 +106,10 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                             {getLocalizedText(appCopy.story.guardianNote, language)}
                         </div>
                         <p>{getLocalizedText(guardianNote.text, contentLanguage, fallbackLanguage)}</p>
+                        <p className="mt-3 text-xs text-brand-muted">
+                            {getLocalizedText(appCopy.story.confidence, language)}: <span className="font-medium text-brand-ink">{guardianNote.confidence}</span> · {getLocalizedText(appCopy.story.sources, language)}: <span className="font-medium text-brand-ink">{guardianNote.sourceIds.length}</span>
+                            {guardianNote.fastTracked ? ` · ${getLocalizedText(appCopy.story.fastTrack, language)}` : ''}
+                        </p>
                     </div>
                 ) : null}
                 <div className="grid gap-3 md:grid-cols-2">
@@ -128,4 +134,3 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
         </article>
     );
 }
-

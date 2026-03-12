@@ -15,8 +15,8 @@ const speechLanguageMap: Record<Language, string> = {
 
 const pronunciationOverrides: Record<Language, Record<string, string>> = {
     ne: {
-        GTA: '?? ?? ?',
-        IMD: '?? ?? ??',
+        GTA: 'जी टी ए',
+        IMD: 'आई एम डी',
     },
     en: {
         Peshok: 'Pay-shok',
