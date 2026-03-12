@@ -1,4 +1,5 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { AuthProvider } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import BottomNav from '@/components/BottomNav';
 import './globals.css';
@@ -15,11 +16,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en">
+        <html lang="ne">
             <body>
                 <LanguageProvider>
-                    <main className="pb-24">{children}</main>
-                    <BottomNav />
+                    <AuthProvider>
+                        <main className="pb-24">{children}</main>
+                        <BottomNav />
+                    </AuthProvider>
                 </LanguageProvider>
             </body>
         </html>

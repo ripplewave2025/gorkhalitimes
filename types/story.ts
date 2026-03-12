@@ -1,4 +1,4 @@
-﻿import { Language, LocalizedText, StoryCategory, StoryStatus, TrustBadge } from '@/types/common';
+﻿import { FeedLane, Language, LocalizedText, StoryCategory, StoryStatus, TrustBadge } from '@/types/common';
 
 export interface StoryTimelineEntry {
     id: string;
@@ -24,6 +24,7 @@ export interface StoryCluster {
     uncertaintyLine?: LocalizedText;
     primaryLocation: string;
     category: StoryCategory;
+    lanes?: FeedLane[];
     heroImageUrl: string;
     sourceIds: string[];
     trustBadge: TrustBadge;
@@ -32,6 +33,7 @@ export interface StoryCluster {
     publishedAt: string;
     updatedAt: string;
     audioLanguages: Language[];
+    audioStatus?: 'cached' | 'queued' | 'browser-fallback';
     scores: StoryScoreInputs;
     savedCount: number;
     timeline: StoryTimelineEntry[];

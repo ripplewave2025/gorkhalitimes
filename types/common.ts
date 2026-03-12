@@ -1,16 +1,27 @@
-﻿export type Language = 'en' | 'ne';
+﻿export type Language = 'ne' | 'en' | 'hi' | 'bn' | 'bo' | 'lep' | 'dz' | 'sher';
+export type LanguageSupportLevel = 'production' | 'beta' | 'experimental';
 
-export interface LocalizedText {
-    en: string;
-    ne: string;
-}
+export type FeedLane =
+    | 'for-you'
+    | 'top-stories'
+    | 'alerts'
+    | 'tea'
+    | 'roads'
+    | 'govt-schemes'
+    | 'jobs'
+    | 'schools'
+    | 'weather'
+    | 'economy';
+
+export type LocalizedText = Partial<Record<Language, string>>;
 
 export type StoryCategory =
     | 'public-safety'
     | 'civic'
     | 'education'
     | 'economy'
-    | 'community';
+    | 'community'
+    | 'govt-schemes';
 
 export type TrustBadge =
     | 'official'
