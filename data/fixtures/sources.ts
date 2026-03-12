@@ -1,4 +1,4 @@
-﻿import { Source } from '@/types';
+import { Source } from '@/types';
 
 export const sources: Source[] = [
     {
@@ -35,6 +35,28 @@ export const sources: Source[] = [
         isOfficial: true,
     },
     {
+        id: 'india-gov-schemes',
+        name: 'MyScheme India',
+        type: 'official',
+        baseUrl: 'https://www.myscheme.gov.in',
+        trustTier: 'A',
+        language: 'en',
+        locationScope: 'India',
+        rightsMode: 'summary_allowed',
+        isOfficial: true,
+    },
+    {
+        id: 'imd-hills-weather',
+        name: 'India Meteorological Department',
+        type: 'official',
+        baseUrl: 'https://mausam.imd.gov.in',
+        trustTier: 'A',
+        language: 'en',
+        locationScope: 'North Bengal and hills',
+        rightsMode: 'summary_allowed',
+        isOfficial: true,
+    },
+    {
         id: 'hills-brief',
         name: 'Hills Brief',
         type: 'newspaper',
@@ -60,7 +82,7 @@ export const sources: Source[] = [
         id: 'tea-board-hills-desk',
         name: 'Tea Board Hills Desk',
         type: 'website',
-        baseUrl: 'https://example.com/tea-board-hills',
+        baseUrl: 'https://www.teaboard.gov.in',
         trustTier: 'B',
         language: 'en',
         locationScope: 'Tea gardens',

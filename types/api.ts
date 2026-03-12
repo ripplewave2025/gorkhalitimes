@@ -1,7 +1,8 @@
-﻿import { AlertItem } from '@/types/alert';
+import { AlertItem } from '@/types/alert';
 import { GuardianNote } from '@/types/note';
 import { Source } from '@/types/source';
 import { StoryCluster } from '@/types/story';
+import { LocalizedText } from '@/types/common';
 
 export interface FeedResponse {
     stories: StoryCluster[];
@@ -17,7 +18,8 @@ export interface StoryDetailResponse {
 }
 
 export interface SearchResponse {
-    answerSummary: string | null;
+    answerSummary: LocalizedText | null;
     stories: StoryCluster[];
     sourceCount: number;
+    suggestedQueries: string[];
 }

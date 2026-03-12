@@ -1,14 +1,13 @@
-﻿'use client';
+'use client';
 
 import { AlertTriangle, Clock3 } from 'lucide-react';
 import { alerts } from '@/data/fixtures/alerts';
 import { sources } from '@/data/fixtures/sources';
-import { appCopy } from '@/lib/client/copy';
 import { formatRelativeTime, getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
 
 export default function AlertsBanner() {
-    const { language } = useLanguage();
+    const { language, contentLanguage, fallbackLanguage } = useLanguage();
 
     if (alerts.length === 0) {
         return null;
@@ -31,8 +30,8 @@ export default function AlertsBanner() {
                                 {formatRelativeTime(alert.updatedAt, language)}
                             </span>
                         </div>
-                        <h2 className="text-base font-semibold text-brand-ink">{getLocalizedText(alert.title, language)}</h2>
-                        <p className="mt-2 text-sm leading-6 text-brand-muted">{getLocalizedText(alert.body, language)}</p>
+                        <h2 className="text-base font-semibold text-brand-ink">{getLocalizedText(alert.title, contentLanguage, fallbackLanguage)}</h2>
+                        <p className="mt-2 text-sm leading-6 text-brand-muted">{getLocalizedText(alert.body, contentLanguage, fallbackLanguage)}</p>
                         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-brand-muted">
                             <span className="rounded-full bg-white px-3 py-1">{alert.locationScope}</span>
                             {source ? <span className="rounded-full bg-white px-3 py-1">{source.name}</span> : null}

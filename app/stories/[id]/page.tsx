@@ -1,16 +1,17 @@
-﻿'use client';
+'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { guardianNotes } from '@/data/fixtures/notes';
 import { sources } from '@/data/fixtures/sources';
 import { storyClusters } from '@/data/fixtures/stories';
+import ListenButton from '@/components/ListenButton';
 import { appCopy, trustBadgeLabels } from '@/lib/client/copy';
 import { formatRelativeTime, getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
 
 export default function StoryDetailPage({ params }: { params: { id: string } }) {
-    const { language } = useLanguage();
+    const { language, contentLanguage, fallbackLanguage } = useLanguage();
     const story = storyClusters.find((item) => item.id === params.id);
 
     if (!story) {
@@ -33,7 +34,7 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
             <div className="mx-auto max-w-4xl space-y-6">
                 <div className="surface-card overflow-hidden rounded-[2rem]">
                     <div className="relative h-80 w-full">
-                        <Image src={story.heroImageUrl} alt={getLocalizedText(story.headline, language)} fill className="object-cover" priority />
+                        <Image src={story.heroImageUrl} alt={getLocalizedText(story.headline, contentLanguage, fallbackLanguage)} fill className="object-cover" priority />
                     </div>
                     <div className="space-y-5 p-6">
                         <div className="flex flex-wrap items-center gap-2">
@@ -42,14 +43,18 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
                             <span className="chip">{formatRelativeTime(story.updatedAt, language)}</span>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-semibold text-brand-ink">{getLocalizedText(story.headline, language)}</h1>
-                            <p className="mt-4 text-base leading-7 text-brand-muted">{getLocalizedText(story.summaryFull, language)}</p>
-                            {story.uncertaintyLine ? <p className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm leading-6 text-amber-900">{getLocalizedText(story.uncertaintyLine, language)}</p> : null}
+                            <h1 className="text-3xl font-semibold text-brand-ink">{getLocalizedText(story.headline, contentLanguage, fallbackLanguage)}</h1>
+                            <p className="mt-4 text-base leading-7 text-brand-muted">{getLocalizedText(story.summaryFull, contentLanguage, fallbackLanguage)}</p>
+                            {story.uncertaintyLine ? <p className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm leading-6 text-amber-900">{getLocalizedText(story.uncertaintyLine, contentLanguage, fallbackLanguage)}</p> : null}
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                            <ListenButton story={story} />
+                            <Link href={`/stories/${story.id}/request-note`} className="btn-secondary">{getLocalizedText(appCopy.actions.requestNote, language)}</Link>
                         </div>
                         {guardianNote ? (
                             <section className="rounded-[1.5rem] bg-brand-green-soft p-5">
                                 <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.story.guardianNote, language)}</h2>
-                                <p className="mt-3 text-sm leading-6 text-brand-ink">{getLocalizedText(guardianNote.text, language)}</p>
+                                <p className="mt-3 text-sm leading-6 text-brand-ink">{getLocalizedText(guardianNote.text, contentLanguage, fallbackLanguage)}</p>
                                 <p className="mt-3 text-xs uppercase tracking-[0.16em] text-brand-muted">{guardianNote.confidence}</p>
                             </section>
                         ) : null}
@@ -79,7 +84,7 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
                     <div className="mt-4 space-y-3">
                         {story.timeline.map((entry) => (
                             <div key={entry.id} className="rounded-2xl bg-white p-4">
-                                <p className="text-sm leading-6 text-brand-ink">{getLocalizedText(entry.label, language)}</p>
+                                <p className="text-sm leading-6 text-brand-ink">{getLocalizedText(entry.label, contentLanguage, fallbackLanguage)}</p>
                                 <p className="mt-2 text-xs uppercase tracking-[0.16em] text-brand-muted">{formatRelativeTime(entry.timestamp, language)}</p>
                             </div>
                         ))}
@@ -95,7 +100,7 @@ export default function StoryDetailPage({ params }: { params: { id: string } }) 
                         {relatedStories.map((related) => (
                             <Link key={related.id} href={`/stories/${related.id}`} className="rounded-2xl bg-white p-4">
                                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-muted">{related.primaryLocation}</p>
-                                <p className="mt-2 text-sm font-medium leading-6 text-brand-ink">{getLocalizedText(related.headline, language)}</p>
+                                <p className="mt-2 text-sm font-medium leading-6 text-brand-ink">{getLocalizedText(related.headline, contentLanguage, fallbackLanguage)}</p>
                             </Link>
                         ))}
                     </div>

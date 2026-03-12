@@ -1,18 +1,48 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
-import { PauseCircle, PlayCircle } from 'lucide-react';
-import { storyClusters } from '@/data/fixtures/stories';
+import { PauseCircle, PlayCircle, Volume2 } from 'lucide-react';
 import { appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
+import { storyAudioService } from '@/lib/client/audio';
 import { useLanguage } from '@/lib/LanguageContext';
-import { scoreStory } from '@/lib/server/feed/score';
+import { getFeed } from '@/lib/server/feed/get-feed';
 
 export default function VoicePage() {
-    const { language } = useLanguage();
-    const [playingId, setPlayingId] = useState<string | null>(storyClusters[0]?.id ?? null);
-    const [speed, setSpeed] = useState('1.0x');
-    const playlist = [...storyClusters].sort((a, b) => scoreStory(b.scores) - scoreStory(a.scores)).slice(0, 5);
+    const { language, audioLanguage, preferences, updatePreferences } = useLanguage();
+    const [playingId, setPlayingId] = useState<string | null>(null);
+    const playlist = getFeed({ lane: 'top-stories', preferences }).stories.slice(0, 5);
+
+    const handleToggle = (storyId: string) => {
+        const story = playlist.find((item) => item.id === storyId);
+        if (!story) {
+            return;
+        }
+
+        if (playingId === storyId) {
+            storyAudioService.stop();
+            setPlayingId(null);
+            return;
+        }
+
+        const didStart = storyAudioService.speakNow({
+            story,
+            language: audioLanguage,
+            rate: preferences.audioSpeed,
+            onEnd: () => setPlayingId(null),
+        });
+
+        setPlayingId(didStart ? storyId : null);
+    };
+
+    const handlePlayAll = () => {
+        const first = playlist[0];
+        if (!first) {
+            return;
+        }
+
+        handleToggle(first.id);
+    };
 
     return (
         <div className="min-h-screen bg-brand-bg px-4 py-6">
@@ -24,15 +54,16 @@ export default function VoicePage() {
 
                 <section className="surface-card rounded-[2rem] p-5">
                     <div className="flex flex-wrap items-center gap-3">
-                        <button type="button" className="btn-primary">{getLocalizedText(appCopy.actions.playAll, language)}</button>
+                        <button type="button" onClick={handlePlayAll} className="btn-primary">{getLocalizedText(appCopy.actions.playAll, language)}</button>
                         <button type="button" className="btn-secondary">{getLocalizedText(appCopy.actions.downloadPack, language)}</button>
-                        <select value={speed} onChange={(event) => setSpeed(event.target.value)} className="rounded-full border border-brand-line bg-white px-4 py-3 text-sm text-brand-ink outline-none">
-                            <option>0.8x</option>
-                            <option>1.0x</option>
-                            <option>1.25x</option>
-                        </select>
+                        <label className="flex items-center gap-3 rounded-full border border-brand-line bg-white px-4 py-3 text-sm text-brand-ink">
+                            <Volume2 size={16} />
+                            <input type="range" min="0.8" max="1.25" step="0.05" value={preferences.audioSpeed} onChange={(event) => updatePreferences({ audioSpeed: Number(event.target.value) })} />
+                            <span>{preferences.audioSpeed.toFixed(2)}x</span>
+                        </label>
                     </div>
                     <p className="mt-4 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.voice.packNote, language)}</p>
+                    <p className="mt-2 text-xs uppercase tracking-[0.16em] text-brand-muted">{getLocalizedText(appCopy.voice.fallback, language)}</p>
                 </section>
 
                 <section className="space-y-4">
@@ -40,11 +71,11 @@ export default function VoicePage() {
                         const isPlaying = playingId === story.id;
 
                         return (
-                            <button key={story.id} type="button" onClick={() => setPlayingId(isPlaying ? null : story.id)} className="surface-card flex w-full items-start justify-between rounded-[2rem] p-5 text-left">
+                            <button key={story.id} type="button" onClick={() => handleToggle(story.id)} className="surface-card flex w-full items-start justify-between rounded-[2rem] p-5 text-left">
                                 <div>
-                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">{language === 'ne' ? `ट्र्याक ${index + 1}` : `Track ${index + 1}`}</p>
-                                    <h2 className="mt-2 text-lg font-semibold text-brand-ink">{getLocalizedText(story.headline, language)}</h2>
-                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} • {story.audioLanguages.join(', ').toUpperCase()}</p>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">{language === 'ne' ? `??????? ${index + 1}` : `Track ${index + 1}`}</p>
+                                    <h2 className="mt-2 text-lg font-semibold text-brand-ink">{getLocalizedText(story.headline, audioLanguage)}</h2>
+                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} � {story.audioStatus ?? 'browser-fallback'}</p>
                                 </div>
                                 {isPlaying ? <PauseCircle size={30} className="text-brand-green" /> : <PlayCircle size={30} className="text-brand-green" />}
                             </button>
