@@ -1,11 +1,12 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import BottomNav from '@/components/BottomNav';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'Gorkha AI - News for the Diaspora',
-    description: 'AI-powered news platform for the Gorkha diaspora in English, Nepali, and Hindi.',
+    metadataBase: new URL('https://gorkhayai.com'),
+    title: 'GorkhayAI',
+    description: 'Voice-first local intelligence for the Darjeeling hills.',
 };
 
 export default function RootLayout({
@@ -15,11 +16,9 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="bg-brand-dark min-h-screen">
+            <body>
                 <LanguageProvider>
-                    <main className="pb-20">
-                        {children}
-                    </main>
+                    <main className="pb-24">{children}</main>
                     <BottomNav />
                 </LanguageProvider>
             </body>

@@ -1,0 +1,167 @@
+﻿generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+    guest
+    reader
+    contributor
+    note_writer
+    guardian
+    admin
+}
+
+enum TrustTier {
+    A
+    B
+    C
+    D
+}
+
+enum RightsMode {
+    link_only
+    summary_allowed
+    partner_full
+}
+
+enum StoryStatus {
+    active
+    developing
+    resolved
+    archived
+}
+
+enum TrustBadge {
+    official
+    multi_source
+    single_source
+    developing
+    disputed
+}
+
+enum AlertStatus {
+    active
+    updated
+    resolved
+}
+
+enum NoteStatus {
+    draft
+    under_review
+    published
+    rejected
+    superseded
+}
+
+model User {
+    id                 String   @id @default(cuid())
+    name               String
+    phone              String?  @unique
+    email              String?  @unique
+    role               UserRole @default(reader)
+    languagePreference String   @default("en")
+    hometownOptional   String?
+    isPhoneVerified    Boolean  @default(false)
+    status             String   @default("active")
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+}
+
+model Source {
+    id            String    @id @default(cuid())
+    name          String
+    type          String
+    baseUrl       String
+    rssUrl        String?
+    trustTier     TrustTier
+    language      String
+    locationScope String
+    status        String    @default("active")
+    ingestMethod  String?   
+    rightsMode    RightsMode
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+}
+
+model StoryCluster {
+    id               String      @id @default(cuid())
+    canonicalTitle   String
+    summaryShortNe   String
+    summaryShortEn   String
+    summaryFullNe    String
+    summaryFullEn    String
+    trustBadge       TrustBadge
+    urgencyScore     Float       @default(0)
+    relevanceScore   Float       @default(0)
+    freshnessScore   Float       @default(0)
+    primaryImageUrl  String?
+    primaryLocation  String?
+    category         String
+    status           StoryStatus @default(active)
+    firstSeenAt      DateTime    @default(now())
+    lastUpdatedAt    DateTime    @updatedAt
+}
+
+model Alert {
+    id                String      @id @default(cuid())
+    title             String
+    body              String
+    category          String
+    severity          String
+    locationScope     String
+    status            AlertStatus @default(active)
+    sourceUrl         String?
+    publishedByUserId String?
+    startsAt          DateTime
+    endsAt            DateTime?
+    createdAt         DateTime    @default(now())
+    updatedAt         DateTime    @updatedAt
+}
+
+model GuardianNote {
+    id               String     @id @default(cuid())
+    clusterId        String
+    authorUserId     String
+    noteType         String
+    text             String
+    confidence       String
+    language         String
+    sourceLinksJson  Json
+    aiAssisted       Boolean    @default(false)
+    status           NoteStatus @default(draft)
+    publishedAt      DateTime?
+    createdAt        DateTime   @default(now())
+    updatedAt        DateTime   @updatedAt
+}
+
+model NoteRating {
+    id                    String   @id @default(cuid())
+    noteId                String
+    userId                String
+    ratingValue           String
+    ratingWeight          Float    @default(1)
+    clusterBucketSnapshot String?
+    createdAt             DateTime @default(now())
+}
+
+model Save {
+    id        String   @id @default(cuid())
+    userId    String
+    clusterId String
+    createdAt DateTime @default(now())
+}
+
+model AuditLog {
+    id          String   @id @default(cuid())
+    actorUserId String?
+    actionType  String
+    entityType  String
+    entityId    String
+    metadataJson Json
+    createdAt   DateTime @default(now())
+}

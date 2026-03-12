@@ -1,32 +1,33 @@
-'use client';
+﻿'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Language } from '@/types';
 
-interface LanguageContextType {
+interface LanguageContextValue {
     language: Language;
-    setLanguage: (lang: Language) => void;
+    setLanguage: (language: Language) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const STORAGE_KEY = 'gorkhayai-language';
+const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-    const [language, setLanguage] = useState<Language>('en');
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+    const [language, setLanguageState] = useState<Language>('en');
 
     useEffect(() => {
-        const saved = localStorage.getItem('gorkha-language') as Language;
-        if (saved && ['en', 'ne', 'hi'].includes(saved)) {
-            setLanguage(saved);
+        const savedLanguage = window.localStorage.getItem(STORAGE_KEY);
+        if (savedLanguage === 'en' || savedLanguage === 'ne') {
+            setLanguageState(savedLanguage);
         }
     }, []);
 
-    const handleSetLanguage = (lang: Language) => {
-        setLanguage(lang);
-        localStorage.setItem('gorkha-language', lang);
+    const setLanguage = (nextLanguage: Language) => {
+        setLanguageState(nextLanguage);
+        window.localStorage.setItem(STORAGE_KEY, nextLanguage);
     };
 
     return (
-        <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage }}>
+        <LanguageContext.Provider value={{ language, setLanguage }}>
             {children}
         </LanguageContext.Provider>
     );
@@ -34,8 +35,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
 export function useLanguage() {
     const context = useContext(LanguageContext);
-    if (context === undefined) {
-        throw new Error('useLanguage must be used within a LanguageProvider');
+
+    if (!context) {
+        throw new Error('useLanguage must be used within LanguageProvider');
     }
+
     return context;
 }
