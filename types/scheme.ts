@@ -6,6 +6,7 @@ export interface GovtScheme {
     whoItsFor: LocalizedText;
     benefitSummary: LocalizedText;
     eligibilitySnapshot: LocalizedText;
+    documentsNeeded?: LocalizedText[];
     learnMoreUrl: string;
     sourceId: string;
     locationScope: string;

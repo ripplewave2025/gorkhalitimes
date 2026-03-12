@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ChevronDown } from 'lucide-react';
 import LanguageToggle from '@/components/LanguageToggle';
 import { appCopy } from '@/lib/client/copy';
 import { getFeedLaneLabel, getLocalizedText, SUPPORTED_LANGUAGES } from '@/lib/client/language';
@@ -24,11 +25,16 @@ function LanguageSelect({
     return (
         <label className="block space-y-2 text-sm text-brand-ink">
             <span className="font-medium">{label}</span>
-            <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
-                {SUPPORTED_LANGUAGES.map((item) => (
-                    <option key={item.code} value={item.code}>{item.nativeLabel} · {item.supportLevel}</option>
-                ))}
-            </select>
+            <div className="relative">
+                <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="field-select">
+                    {SUPPORTED_LANGUAGES.map((item) => (
+                        <option key={item.code} value={item.code}>
+                            {item.nativeLabel} / {item.supportLevel}
+                        </option>
+                    ))}
+                </select>
+                <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted" />
+            </div>
         </label>
     );
 }
@@ -94,14 +100,14 @@ export default function OnboardingPage() {
                     </article>
 
                     <article className="surface-card space-y-4 rounded-[2rem] p-6">
-                        <h2 className="text-xl font-semibold text-brand-ink">{language === 'ne' ? 'आजको ब्रीफ मिलाउनुहोस्' : 'Tune your daily brief'}</h2>
-                        <label className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3">
+                        <h2 className="text-xl font-semibold text-brand-ink">{language === 'ne' ? 'आजको brief मिलाउनुहोस्' : 'Tune your daily brief'}</h2>
+                        <label className="field-toggle">
                             <span>{getLocalizedText(appCopy.more.morningDigest, language)}</span>
-                            <input type="checkbox" checked={preferences.morningAudioDigest} onChange={() => updatePreferences({ morningAudioDigest: !preferences.morningAudioDigest })} />
+                            <input type="checkbox" checked={preferences.morningAudioDigest} onChange={() => updatePreferences({ morningAudioDigest: !preferences.morningAudioDigest })} className="field-check" />
                         </label>
-                        <label className="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3">
+                        <label className="field-toggle">
                             <span>{getLocalizedText(appCopy.more.govtSchemesAlerts, language)}</span>
-                            <input type="checkbox" checked={preferences.govtSchemesAlerts} onChange={() => updatePreferences({ govtSchemesAlerts: !preferences.govtSchemesAlerts })} />
+                            <input type="checkbox" checked={preferences.govtSchemesAlerts} onChange={() => updatePreferences({ govtSchemesAlerts: !preferences.govtSchemesAlerts })} className="field-check" />
                         </label>
                         <label className="block space-y-2 text-sm text-brand-ink">
                             <span className="font-medium">{getLocalizedText(appCopy.more.audioSpeed, language)}</span>
@@ -118,7 +124,9 @@ export default function OnboardingPage() {
                             {starterPlaces.map((place) => {
                                 const active = preferences.preferredPlaces.includes(place);
                                 return (
-                                    <button key={place} type="button" onClick={() => togglePlace(place)} className={active ? 'pill-active' : 'pill-muted border border-brand-line bg-white'}>{place}</button>
+                                    <button key={place} type="button" onClick={() => togglePlace(place)} className={active ? 'pill-active' : 'pill-muted border border-brand-line bg-brand-bg/70'}>
+                                        {place}
+                                    </button>
                                 );
                             })}
                         </div>
@@ -130,7 +138,9 @@ export default function OnboardingPage() {
                             {starterTopics.map((topic) => {
                                 const active = preferences.preferredTopics.includes(topic);
                                 return (
-                                    <button key={topic} type="button" onClick={() => togglePreferredTopic(topic)} className={active ? 'pill-active' : 'pill-muted border border-brand-line bg-white'}>{getFeedLaneLabel(topic, language)}</button>
+                                    <button key={topic} type="button" onClick={() => togglePreferredTopic(topic)} className={active ? 'pill-active' : 'pill-muted border border-brand-line bg-brand-bg/70'}>
+                                        {getFeedLaneLabel(topic, language)}
+                                    </button>
                                 );
                             })}
                         </div>

@@ -5,9 +5,9 @@ GorkhayAI is a voice-first local intelligence app for the Darjeeling hills. It t
 ## Demo-ready now
 
 - Nepali-first UI with repaired Unicode content and Devanagari-safe typography
-- Swipeable Home feed with alert strip, lane chips, story cards, source pills, and Guardian Angel Note context
+- Centered spotlight-style Home feed with an image-led lead story, lane chips, source pills, and calmer supporting rails
 - Search, Story Detail, Voice Today, Saved, Help, onboarding, auth, and settings flows working end-to-end
-- Govt Schemes cards with practical summary, eligibility snapshot, save, learn-more, and help actions
+- Govt Schemes cards with practical summary, eligibility snapshot, document chips, save, learn-more, and help actions
 - Browser speech fallback for story listening and Voice Today
 - Adapter-based live ingestion path behind flags
 - Reliable investor demo mode that stays polished even if live sources fail
@@ -26,13 +26,19 @@ Set in `.env.local`:
 ```bash
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/gorkhayai"
 ENABLE_LIVE_INGESTION="false"
+LIVE_INGESTION_TTL_MINUTES="50"
 NEXT_PUBLIC_USE_API_FEED="false"
 NEXT_PUBLIC_DEMO_MODE="true"
+NEXT_PUBLIC_FEED_REFRESH_MINUTES="50"
 ```
 
 - `NEXT_PUBLIC_DEMO_MODE=true`: forces the polished seeded demo path and skips live ingestion entirely. Use this for the investor demo.
 - `NEXT_PUBLIC_USE_API_FEED=true`: makes the UI fetch from API routes instead of reading seeded data directly in the client.
 - `ENABLE_LIVE_INGESTION=true`: enables live source ingestion inside the API feed/search path. Keep this `false` for the safest demo.
+- `LIVE_INGESTION_TTL_MINUTES=50`: caches live ingestion results for 50 minutes on the server.
+- `NEXT_PUBLIC_FEED_REFRESH_MINUTES=50`: tells Home and Voice when to refresh live data in live rehearsal mode.
+
+`NEXT_PUBLIC_*` flags are compiled into the client bundle. If you use `npm run build` plus `npm run start`, rebuild after changing them.
 
 ## Recommended modes
 
@@ -56,9 +62,11 @@ Use:
 NEXT_PUBLIC_DEMO_MODE="false"
 NEXT_PUBLIC_USE_API_FEED="true"
 ENABLE_LIVE_INGESTION="true"
+LIVE_INGESTION_TTL_MINUTES="50"
+NEXT_PUBLIC_FEED_REFRESH_MINUTES="50"
 ```
 
-This exercises the API-backed live path and source health behavior.
+This exercises the API-backed live path and source health behavior. Home and Voice will refresh live data on a 50-minute rhythm.
 
 ## Run locally
 
@@ -73,7 +81,7 @@ This exercises the API-backed live path and source health behavior.
 npm install
 ```
 
-### Start
+### Start in demo mode
 
 ```bash
 npm run dev
@@ -81,11 +89,20 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+### Rehearse the production build
+
+```bash
+npm run build
+npm run start
+```
+
+If you use `npm run start`, make sure the `NEXT_PUBLIC_*` flags were already set before the build step.
+
 ## Best 3-minute demo path
 
-1. Open Home and show the Nepali-first hero, alert strip, lane chips, and source-visible story card.
+1. Open Home and show the spotlight story, search, chips, and supporting scheme/feed rails.
 2. Open the Peshok story and show the Guardian Angel Note, confidence context, and listen-now action.
-3. Show Search with a query like `पेसोक` or `tea`.
+3. Show Search with a query like `पेशोक` or `tea`.
 4. Open Voice Today and play a top story with browser speech.
 5. Return to Home or Search and open a Govt Schemes card, then show the help CTA.
 

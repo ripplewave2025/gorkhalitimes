@@ -53,13 +53,13 @@ export default function RequestNotePage({ params }: { params: { id: string } }) 
                     <p className="mt-2 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.notes.detailsHint, language)}</p>
                 </header>
                 <form onSubmit={handleSubmit} className="surface-card space-y-4 rounded-[2rem] p-5">
-                    <select value={reason} onChange={(event) => setReason(event.target.value as NoteType)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
+                    <select value={reason} onChange={(event) => setReason(event.target.value as NoteType)} className="field-select">
                         {noteReasons.map((item) => (
                             <option key={item} value={item}>{getLocalizedText(noteTypeLabels[item], language)}</option>
                         ))}
                     </select>
-                    <textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={5} placeholder={language === 'ne' ? 'कुन कुरा गलत वा अपूरो देखिन्छ?' : 'What looks incorrect or incomplete?'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
-                    <input value={evidenceUrl} onChange={(event) => setEvidenceUrl(event.target.value)} placeholder="https://" className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={5} placeholder={language === 'ne' ? 'कुन कुरा गलत वा अपूरो देखिन्छ?' : 'What looks incorrect or incomplete?'} className="field-textarea" />
+                    <input value={evidenceUrl} onChange={(event) => setEvidenceUrl(event.target.value)} placeholder="https://" className="field-control" />
                     <button type="submit" className="btn-primary">{getLocalizedText(appCopy.actions.submit, language)}</button>
                     {!session || session.isGuest ? <Link href="/auth" className="inline-flex text-sm font-medium text-brand-green">{getLocalizedText(appCopy.actions.signIn, language)}</Link> : null}
                     {submitted ? <p className="text-sm text-brand-green">{submitted}</p> : null}

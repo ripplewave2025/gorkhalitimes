@@ -30,7 +30,7 @@ function HelpPageContent() {
 
     const handleRecord = async () => {
         if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-            setStatus(language === 'ne' ? 'यहाँ रेकर्डिङ समर्थित छैन। साटोमा अडियो फाइल अपलोड गर्नुहोस्।' : 'Recording is not supported here. Upload a file instead.');
+            setStatus(language === 'ne' ? 'यहाँ रेकर्डिङ समर्थित छैन। सट्टामा अडियो फाइल अपलोड गर्नुहोस्।' : 'Recording is not supported here. Upload a file instead.');
             return;
         }
 
@@ -85,13 +85,13 @@ function HelpPageContent() {
                         onChange={(event) => setQuestionText(event.target.value)}
                         rows={5}
                         placeholder={language === 'ne' ? 'के कुरा बुझ्न मद्दत चाहिन्छ?' : 'What do you need help understanding?'}
-                        className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
+                        className="field-textarea"
                     />
                     <input
                         value={callbackNumber}
                         onChange={(event) => setCallbackNumber(event.target.value)}
                         placeholder={language === 'ne' ? 'फिर्ता फोन नम्बर (वैकल्पिक)' : 'Callback number (optional)'}
-                        className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
+                        className="field-control"
                     />
                     <div className="flex flex-wrap gap-3">
                         <button type="button" onClick={handleRecord} className="btn-secondary justify-center">

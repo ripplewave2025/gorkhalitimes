@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PauseCircle, PlayCircle, Volume2 } from 'lucide-react';
+import { PauseCircle, PlayCircle, RadioTower, Volume2 } from 'lucide-react';
 import { appCopy, audioStatusLabels } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { storyAudioService } from '@/lib/client/audio';
@@ -11,24 +11,51 @@ import { FeedResponse } from '@/types';
 
 const useApiFeed = process.env.NEXT_PUBLIC_USE_API_FEED === 'true';
 
+function getRefreshIntervalMinutes() {
+    const parsed = Number(process.env.NEXT_PUBLIC_FEED_REFRESH_MINUTES ?? '50');
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 50;
+}
+
 export default function VoicePage() {
     const { language, audioLanguage, preferences, updatePreferences } = useLanguage();
     const [playingId, setPlayingId] = useState<string | null>(null);
     const [remoteFeed, setRemoteFeed] = useState<FeedResponse | null>(null);
+
+    const refreshIntervalMinutes = getRefreshIntervalMinutes();
 
     useEffect(() => {
         if (!useApiFeed) {
             return;
         }
 
-        const params = new URLSearchParams({ lane: 'top-stories' });
-        if (preferences.preferredPlaces.length > 0) {
-            params.set('preferred_places', preferences.preferredPlaces.join(','));
-        }
-        fetch(`/api/feed?${params.toString()}`)
-            .then((response) => response.json())
-            .then((data) => setRemoteFeed(data));
-    }, [preferences.preferredPlaces]);
+        let active = true;
+        let timer: number | null = null;
+
+        const loadPlaylist = async () => {
+            const params = new URLSearchParams({ lane: 'top-stories' });
+            if (preferences.preferredPlaces.length > 0) {
+                params.set('preferred_places', preferences.preferredPlaces.join(','));
+            }
+
+            const response = await fetch(`/api/feed?${params.toString()}`);
+            const data = await response.json() as FeedResponse;
+            if (active) {
+                setRemoteFeed(data);
+                timer = window.setTimeout(() => {
+                    void loadPlaylist();
+                }, refreshIntervalMinutes * 60 * 1000);
+            }
+        };
+
+        void loadPlaylist();
+
+        return () => {
+            active = false;
+            if (timer) {
+                window.clearTimeout(timer);
+            }
+        };
+    }, [preferences.preferredPlaces, refreshIntervalMinutes]);
 
     const playlist = (useApiFeed && remoteFeed ? remoteFeed : getFeed({ lane: 'top-stories', preferences })).stories.slice(0, 5);
 
@@ -65,24 +92,45 @@ export default function VoicePage() {
 
     return (
         <div className="min-h-screen bg-brand-bg px-4 py-6">
-            <div className="mx-auto max-w-3xl space-y-6">
-                <header className="surface-card rounded-[2rem] p-5">
+            <div className="mx-auto max-w-4xl space-y-6">
+                <header className="surface-card rounded-[2rem] border border-brand-line/80 p-5">
                     <h1 className="text-2xl font-semibold text-brand-ink">{getLocalizedText(appCopy.voice.title, language)}</h1>
                     <p className="mt-2 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.voice.subtitle, language)}</p>
                 </header>
 
-                <section className="surface-card rounded-[2rem] p-5">
+                <section className="surface-card rounded-[2rem] border border-brand-line/80 p-5">
                     <div className="flex flex-wrap items-center gap-3">
-                        <button type="button" onClick={handlePlayAll} className="btn-primary">{getLocalizedText(appCopy.actions.playAll, language)}</button>
-                        <button type="button" className="btn-secondary">{getLocalizedText(appCopy.actions.downloadPack, language)}</button>
-                        <label className="flex items-center gap-3 rounded-full border border-brand-line bg-white px-4 py-3 text-sm text-brand-ink">
-                            <Volume2 size={16} />
-                            <input type="range" min="0.8" max="1.25" step="0.05" value={preferences.audioSpeed} onChange={(event) => updatePreferences({ audioSpeed: Number(event.target.value) })} />
-                            <span>{preferences.audioSpeed.toFixed(2)}x</span>
+                        <button type="button" onClick={handlePlayAll} className="btn-primary">
+                            {getLocalizedText(appCopy.actions.playAll, language)}
+                        </button>
+                        <button type="button" className="btn-secondary">
+                            {getLocalizedText(appCopy.actions.downloadPack, language)}
+                        </button>
+                        <label className="field-toggle rounded-full px-4 py-3 text-sm text-brand-ink">
+                            <span className="inline-flex items-center gap-2">
+                                <Volume2 size={16} />
+                                {language === 'ne' ? 'गति' : 'Speed'}
+                            </span>
+                            <div className="flex items-center gap-3">
+                                <input
+                                    type="range"
+                                    min="0.8"
+                                    max="1.25"
+                                    step="0.05"
+                                    value={preferences.audioSpeed}
+                                    onChange={(event) => updatePreferences({ audioSpeed: Number(event.target.value) })}
+                                />
+                                <span>{preferences.audioSpeed.toFixed(2)}x</span>
+                            </div>
                         </label>
                     </div>
-                    <p className="mt-4 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.voice.packNote, language)}</p>
-                    <p className="mt-2 text-xs uppercase tracking-[0.16em] text-brand-muted">{getLocalizedText(appCopy.voice.fallback, language)}</p>
+                    <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-muted">
+                        <RadioTower size={14} />
+                        {useApiFeed
+                            ? (language === 'ne' ? `प्लेलिस्ट ${refreshIntervalMinutes} मिनेटमा ताजा हुन्छ` : `Playlist refreshes every ${refreshIntervalMinutes} minutes`)
+                            : (language === 'ne' ? 'ब्राउजर आवाज fallback सक्रिय' : 'Browser voice fallback active')}
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.voice.packNote, language)}</p>
                 </section>
 
                 <section className="space-y-4">
@@ -90,11 +138,20 @@ export default function VoicePage() {
                         const isPlaying = playingId === story.id;
 
                         return (
-                            <button key={story.id} type="button" onClick={() => handleToggle(story.id)} className="surface-card flex w-full items-start justify-between rounded-[2rem] p-5 text-left">
+                            <button
+                                key={story.id}
+                                type="button"
+                                onClick={() => handleToggle(story.id)}
+                                className="surface-card flex w-full items-start justify-between rounded-[2rem] border border-brand-line/80 p-5 text-left transition hover:-translate-y-0.5"
+                            >
                                 <div>
-                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">{getLocalizedText(appCopy.voice.track, language)} {index + 1}</p>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">
+                                        {getLocalizedText(appCopy.voice.track, language)} {index + 1}
+                                    </p>
                                     <h2 className="mt-2 text-lg font-semibold text-brand-ink">{getLocalizedText(story.headline, audioLanguage)}</h2>
-                                    <p className="mt-2 text-sm leading-6 text-brand-muted">{story.primaryLocation} • {getLocalizedText(audioStatusLabels[story.audioStatus ?? 'browser-fallback'], language)}</p>
+                                    <p className="mt-2 text-sm leading-6 text-brand-muted">
+                                        {story.primaryLocation} / {getLocalizedText(audioStatusLabels[story.audioStatus ?? 'browser-fallback'], language)}
+                                    </p>
                                 </div>
                                 {isPlaying ? <PauseCircle size={30} className="text-brand-green" /> : <PlayCircle size={30} className="text-brand-green" />}
                             </button>

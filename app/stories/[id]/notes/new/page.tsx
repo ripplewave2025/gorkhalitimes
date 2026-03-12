@@ -59,18 +59,18 @@ export default function WriteNotePage({ params }: { params: { id: string } }) {
                     <p className="mt-2 text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.notes.detailsHint, language)}</p>
                 </header>
                 <form onSubmit={handleSubmit} className="surface-card space-y-4 rounded-[2rem] p-5">
-                    <select value={noteType} onChange={(event) => setNoteType(event.target.value as NoteType)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
+                    <select value={noteType} onChange={(event) => setNoteType(event.target.value as NoteType)} className="field-select">
                         {noteTypes.map((item) => (
                             <option key={item} value={item}>{getLocalizedText(noteTypeLabels[item], language)}</option>
                         ))}
                     </select>
-                    <select value={confidence} onChange={(event) => setConfidence(event.target.value as ConfidenceLevel)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
+                    <select value={confidence} onChange={(event) => setConfidence(event.target.value as ConfidenceLevel)} className="field-select">
                         {confidenceLevels.map((item) => (
                             <option key={item} value={item}>{getLocalizedText(confidenceLabels[item], language)}</option>
                         ))}
                     </select>
-                    <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} placeholder={language === 'ne' ? 'तटस्थ शैलीमा १–३ वाक्य लेख्नुहोस्।' : 'Write a neutral note in 1-3 sentences'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
-                    <input value={sourceLinks} onChange={(event) => setSourceLinks(event.target.value)} placeholder={language === 'ne' ? 'अल्पविरामले छुट्याइएका स्रोत लिंकहरू' : 'Comma-separated source links'} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                    <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} placeholder={language === 'ne' ? 'तटस्थ शैलीमा १-३ वाक्य लेख्नुहोस्।' : 'Write a neutral note in 1-3 sentences'} className="field-textarea" />
+                    <input value={sourceLinks} onChange={(event) => setSourceLinks(event.target.value)} placeholder={language === 'ne' ? 'अल्पविरामले छुट्याइएका स्रोत लिंकहरू' : 'Comma-separated source links'} className="field-control" />
                     <button type="submit" className="btn-primary">{getLocalizedText(appCopy.actions.submit, language)}</button>
                     {!session || session.isGuest ? <Link href="/auth" className="inline-flex text-sm font-medium text-brand-green">{getLocalizedText(appCopy.actions.signIn, language)}</Link> : null}
                     {submitted ? <p className="text-sm text-brand-green">{submitted}</p> : null}

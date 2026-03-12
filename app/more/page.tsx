@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import LanguageToggle from '@/components/LanguageToggle';
 import { sources } from '@/data/fixtures/sources';
 import { appCopy } from '@/lib/client/copy';
@@ -16,11 +17,16 @@ function LanguageSelect({ label, value, onChange }: { label: string; value: Lang
     return (
         <label className="block space-y-2 text-sm text-brand-ink">
             <span className="font-medium">{label}</span>
-            <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none">
-                {SUPPORTED_LANGUAGES.map((item) => (
-                    <option key={item.code} value={item.code}>{item.nativeLabel} · {item.supportLevel}</option>
-                ))}
-            </select>
+            <div className="relative">
+                <select value={value} onChange={(event) => onChange(event.target.value as Language)} className="field-select">
+                    {SUPPORTED_LANGUAGES.map((item) => (
+                        <option key={item.code} value={item.code}>
+                            {item.nativeLabel} / {item.supportLevel}
+                        </option>
+                    ))}
+                </select>
+                <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted" />
+            </div>
         </label>
     );
 }
@@ -64,13 +70,13 @@ export default function MorePage() {
                     </article>
 
                     <article className="surface-card space-y-4 rounded-[2rem] p-5">
-                        <label className="flex items-center justify-between gap-4">
+                        <label className="field-toggle">
                             <span>{getLocalizedText(appCopy.more.morningDigest, language)}</span>
-                            <input type="checkbox" checked={preferences.morningAudioDigest} onChange={() => updatePreferences({ morningAudioDigest: !preferences.morningAudioDigest })} />
+                            <input type="checkbox" checked={preferences.morningAudioDigest} onChange={() => updatePreferences({ morningAudioDigest: !preferences.morningAudioDigest })} className="field-check" />
                         </label>
-                        <label className="flex items-center justify-between gap-4">
+                        <label className="field-toggle">
                             <span>{getLocalizedText(appCopy.more.govtSchemesAlerts, language)}</span>
-                            <input type="checkbox" checked={preferences.govtSchemesAlerts} onChange={() => updatePreferences({ govtSchemesAlerts: !preferences.govtSchemesAlerts })} />
+                            <input type="checkbox" checked={preferences.govtSchemesAlerts} onChange={() => updatePreferences({ govtSchemesAlerts: !preferences.govtSchemesAlerts })} className="field-check" />
                         </label>
                         <label className="block space-y-2">
                             <span>{getLocalizedText(appCopy.more.audioSpeed, language)}</span>
@@ -83,8 +89,8 @@ export default function MorePage() {
                                 value={placesInput}
                                 onChange={(event) => setPlacesInput(event.target.value)}
                                 onBlur={() => updatePreferences({ preferredPlaces: placesInput.split(',').map((item) => item.trim()).filter(Boolean) })}
-                                placeholder={language === 'ne' ? 'दार्जिलिङ, कर्सियाङ, पेसोक' : 'Darjeeling, Kurseong, Peshok'}
-                                className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
+                                placeholder={language === 'ne' ? 'दार्जिलिङ, कर्सियाङ, पेशोक' : 'Darjeeling, Kurseong, Peshok'}
+                                className="field-control"
                             />
                         </label>
                     </article>
@@ -94,7 +100,7 @@ export default function MorePage() {
                     <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.more.preferredTopics, language)}</h2>
                     <div className="mt-4 flex flex-wrap gap-2">
                         {topicOptions.map((topic) => (
-                            <button key={topic} type="button" onClick={() => togglePreferredTopic(topic)} className={preferences.preferredTopics.includes(topic) ? 'pill-active' : 'pill-muted border border-brand-line bg-white'}>
+                            <button key={topic} type="button" onClick={() => togglePreferredTopic(topic)} className={preferences.preferredTopics.includes(topic) ? 'pill-active' : 'pill-muted border border-brand-line bg-brand-bg/70'}>
                                 {getFeedLaneLabel(topic, language)}
                             </button>
                         ))}
@@ -110,7 +116,7 @@ export default function MorePage() {
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2">
                         {sources.map((source) => (
-                            <button key={source.id} type="button" onClick={() => toggleMutedSource(source.id)} className={preferences.mutedSourceIds.includes(source.id) ? 'pill-active' : 'pill-muted border border-brand-line bg-white'}>
+                            <button key={source.id} type="button" onClick={() => toggleMutedSource(source.id)} className={preferences.mutedSourceIds.includes(source.id) ? 'pill-active' : 'pill-muted border border-brand-line bg-brand-bg/70'}>
                                 {source.name}
                             </button>
                         ))}
@@ -122,7 +128,7 @@ export default function MorePage() {
                         <h2 className="text-lg font-semibold text-brand-ink">{getLocalizedText(appCopy.more.account, language)}</h2>
                         <p className="mt-2 text-sm leading-6 text-brand-muted">
                             {session
-                                ? `${session.name} · ${session.role} · ${session.authMethod}`
+                                ? `${session.name} / ${session.role} / ${session.authMethod}`
                                 : (language === 'ne' ? 'सक्रिय सेसन छैन।' : 'No active session.')}
                         </p>
                     </div>

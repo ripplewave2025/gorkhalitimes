@@ -69,8 +69,8 @@ export default function AuthPage() {
                                 ? 'भूमिका परीक्षणका लागि contributor@..., writer@..., guardian@... वा @gorkhayai.com इमेल प्रयोग गर्न सक्नुहुन्छ।'
                                 : 'For role testing you can use contributor@..., writer@..., guardian@..., or an @gorkhayai.com email.'}
                         </p>
-                        <input value={name} onChange={(event) => setName(event.target.value)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
-                        <input value={email} onChange={(event) => setEmail(event.target.value)} className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none" />
+                        <input value={name} onChange={(event) => setName(event.target.value)} className="field-control" />
+                        <input value={email} onChange={(event) => setEmail(event.target.value)} className="field-control" />
                         <button type="button" onClick={handleGoogle} className="btn-primary justify-center">{getLocalizedText(appCopy.auth.google, language)}</button>
                     </article>
 
@@ -81,14 +81,14 @@ export default function AuthPage() {
                                 value={phone}
                                 onChange={(event) => setPhone(event.target.value)}
                                 placeholder={language === 'ne' ? 'फोन नम्बर' : 'Phone number'}
-                                className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
+                                className="field-control"
                             />
                             {otpRequested ? (
                                 <input
                                     value={otp}
                                     onChange={(event) => setOtp(event.target.value)}
                                     placeholder="123456"
-                                    className="w-full rounded-2xl border border-brand-line bg-white px-4 py-3 text-brand-ink outline-none"
+                                    className="field-control"
                                 />
                             ) : null}
                             <button type="submit" className="btn-secondary w-full justify-center">

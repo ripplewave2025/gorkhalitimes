@@ -54,7 +54,7 @@ export default function RootLayout({
             <body className={`${bodyFont.variable} ${displayFont.variable} ${devanagariFont.variable} ${bengaliFont.variable}`}>
                 <LanguageProvider>
                     <AuthProvider>
-                        <main className="pb-32">{children}</main>
+                        <main className="pb-32 lg:pb-0">{children}</main>
                         <BottomNav />
                     </AuthProvider>
                 </LanguageProvider>

@@ -1,45 +1,47 @@
 # STATUS
 
-_Last updated: 2026-03-12 23:40 IST_
+_Last updated: 2026-03-13 14:10 IST_
 
 ## Snapshot
 
-- The investor-demo blocker was real content corruption across the i18n layer, not just a font issue.
-- Nepali rendering is now clean across the main product surfaces.
-- The app has a dedicated demo-safe mode and a more coherent dark-first presentation.
+- The remaining investor-demo blocker was not just language corruption; it was also first-fold hierarchy and control styling.
+- Nepali rendering is now clean in the verified production-style screenshots, including corrected Devanagari spacing on visible labels.
+- Home now leads with a centered spotlight story, stronger scheme utility, and a 50-minute live refresh configuration for rehearsal mode.
 
 ## Timestamped progress
 
-### 2026-03-12 22:10 - Investor audit completed
+### 2026-03-13 10:40 - Follow-up investor QA
 
-- Reviewed README, PLAN, STATUS, implementation notes, routes, styling, live ingestion, and language assets.
-- Confirmed widespread corruption in shared copy, fixture content, language labels, and several route-level strings.
+- Compared the current repo against the user screenshot and confirmed the screenshot was from an older/stale build.
+- Re-audited Home, Voice, the language selector, and dark-mode control surfaces.
+- Identified the remaining investor-grade issues: mobile select chrome, weak desktop hero composition, desktop bottom-nav overlap, and tracked Devanagari labels.
 
-### 2026-03-12 22:45 - Language layer repaired
+### 2026-03-13 11:20 - Home and controls polish
 
-- Replaced corrupted Nepali text in shared copy, seeded stories, schemes, notes, and UI routes.
-- Repaired native language labels and fallback behavior.
-- Localized note labels, confidence labels, alert status labels, and audio status labels.
+- Rebuilt Home around a centered spotlight card with side rails for feed rhythm and schemes.
+- Removed the setup prompt from the Home first fold so the product leads with value, not onboarding.
+- Restyled the language selector, search bar, auth, help, onboarding, more, and note forms onto shared dark controls.
+- Hid the floating bottom nav on desktop so it no longer overlaps the hero.
 
-### 2026-03-12 23:00 - Typography and theme alignment
+### 2026-03-13 12:05 - Utility and refresh improvements
 
-- Switched to script-aware `next/font` typography with Devanagari-safe rendering.
-- Fixed Tailwind theme tokens that were still pointing at an older light palette.
-- Revalidated Home, Story Detail, Voice, Search, Help, Auth, and Settings layouts after the theme fix.
+- Added documents-needed chips and clearer status framing to Govt Schemes cards.
+- Added a 50-minute live refresh rhythm for ingestion caching and client-side refresh behavior.
+- Added `LIVE_INGESTION_TTL_MINUTES` and `NEXT_PUBLIC_FEED_REFRESH_MINUTES` to `.env.example`.
 
-### 2026-03-12 23:15 - Demo mode and UI polish
+### 2026-03-13 12:40 - Language presentation pass
 
-- Added `NEXT_PUBLIC_DEMO_MODE` so feed and search APIs can serve the stable seeded demo path.
-- Polished the floating bottom nav, story cards, Guardian Angel Note block, and Govt Schemes cards.
-- Tightened auth, help, onboarding, request-note, and write-note flows.
+- Repaired visible Nepali inline strings in auth, help, note request, and note writing flows.
+- Removed Latin-style uppercase tracking from visible Nepali labels so Devanagari no longer appears artificially spaced.
+- Rechecked shared copy, seeded schemes, and language selector labels after the spacing fix.
 
-### 2026-03-12 23:30 - Visual verification
+### 2026-03-13 13:20 - Visual verification
 
-- Ran the app locally with `NEXT_PUBLIC_DEMO_MODE=true`.
-- Captured Playwright mobile screenshots for Home, Search, Story Detail, Voice, and Settings.
-- Verified readable Nepali content and a stable first-screen demo path.
+- Ran Playwright against a clean production-style server on port `3001`.
+- Captured and reviewed Home desktop, Home mobile, and Voice mobile screenshots.
+- Verified the centered story composition, dark controls, and readable Nepali text in the final check.
 
-### 2026-03-12 23:40 - Final validation
+### 2026-03-13 14:05 - Final validation
 
 - Passed `npm run test`
 - Passed `npm run typecheck`
@@ -51,20 +53,22 @@ _Last updated: 2026-03-12 23:40 IST_
 - Real OAuth, OTP, telephony, and server TTS remain deferred to the credentialed phase.
 - Live ingestion is usable for rehearsal, but the safest investor demo is still the seeded demo mode.
 - Hero media is still remote and could be made even more robust later by packaging local assets.
+- `NEXT_PUBLIC_*` flags are build-time for `next build` plus `next start`, so production-style demos should rebuild after env changes.
 
 ## Morning handoff
 
 ### What works now
 
 - Nepali-first Home, Search, Story Detail, Voice, Saved, Help, onboarding, auth, and settings flows
+- Centered image-led Home spotlight with calmer desktop and mobile hierarchy
 - Source-visible story cards with readable Guardian Angel Note context
-- Govt Schemes cards with utility-focused CTAs
+- Govt Schemes cards with utility-focused CTAs and document chips
 - Browser speech playback for stories and Voice Today
 - Demo-safe mode that bypasses live ingestion and keeps the prototype stable
 
 ### What to demo first
 
-1. Home hero, alert strip, lane chips, and the first story card
+1. Home spotlight story, search, chips, and the feed-rhythm + scheme rails
 2. Peshok story detail with Guardian Angel Note and listen-now
 3. Search with a Nepali or English query
 4. Voice Today playback
@@ -75,6 +79,11 @@ _Last updated: 2026-03-12 23:40 IST_
 - `NEXT_PUBLIC_DEMO_MODE=true`
 - `NEXT_PUBLIC_USE_API_FEED=false`
 - `ENABLE_LIVE_INGESTION=false`
+
+Optional for live rehearsal:
+
+- `LIVE_INGESTION_TTL_MINUTES=50`
+- `NEXT_PUBLIC_FEED_REFRESH_MINUTES=50`
 
 ### Blocked on future credentials or APIs
 

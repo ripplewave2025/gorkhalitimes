@@ -7,7 +7,13 @@ import { FeedLane, Source, SourceHealth, StoryCluster } from '@/types';
 
 const adapters: SourceAdapter[] = [rssAdapter, articleExtractionAdapter];
 const supportedLanes: FeedLane[] = ['alerts', 'tea', 'roads', 'govt-schemes', 'jobs', 'schools', 'weather', 'economy'];
-const INGESTION_TTL_MS = 1000 * 60 * 10;
+
+function getIngestionTtlMinutes() {
+    const parsed = Number(process.env.LIVE_INGESTION_TTL_MINUTES ?? process.env.NEXT_PUBLIC_FEED_REFRESH_MINUTES ?? '50');
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 50;
+}
+
+const INGESTION_TTL_MS = 1000 * 60 * getIngestionTtlMinutes();
 
 let cache: { timestamp: number; payload: { stories: StoryCluster[]; health: SourceHealth[] } } | null = null;
 

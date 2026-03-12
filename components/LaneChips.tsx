@@ -20,7 +20,11 @@ export default function LaneChips({ activeLane, onChange, lanes }: LaneChipsProp
                     key={lane}
                     type="button"
                     onClick={() => onChange(lane)}
-                    className={activeLane === lane ? 'pill-active whitespace-nowrap' : 'pill-muted border border-brand-line bg-white whitespace-nowrap'}
+                    className={
+                        activeLane === lane
+                            ? 'pill-active whitespace-nowrap shadow-[0_14px_28px_rgba(78,203,133,0.18)]'
+                            : 'pill-muted whitespace-nowrap border border-brand-line bg-brand-bg/70 hover:border-brand-green/30 hover:text-brand-ink'
+                    }
                 >
                     {getFeedLaneLabel(lane, language)}
                 </button>
@@ -28,4 +32,3 @@ export default function LaneChips({ activeLane, onChange, lanes }: LaneChipsProp
         </section>
     );
 }
-
