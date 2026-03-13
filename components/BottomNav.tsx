@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bookmark, Headphones, Home, MoreHorizontal, Search } from 'lucide-react';
+import { Bookmark, Compass, Headphones, Home, MoreHorizontal, Search } from 'lucide-react';
 import { appCopy } from '@/lib/client/copy';
 import { getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
 
 const navItems = [
     { href: '/', label: appCopy.nav.home, icon: Home },
+    { href: '/discover', label: appCopy.nav.discover, icon: Compass },
     { href: '/search', label: appCopy.nav.search, icon: Search },
     { href: '/voice', label: appCopy.nav.voice, icon: Headphones },
     { href: '/saved', label: appCopy.nav.saved, icon: Bookmark },

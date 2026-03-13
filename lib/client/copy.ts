@@ -25,6 +25,7 @@ export const appCopy = {
     },
     nav: {
         home: { en: 'Home', ne: 'होम' },
+        discover: { en: 'Discover', ne: 'खोज्नुहोस्' },
         search: { en: 'Search', ne: 'खोज' },
         voice: { en: 'Voice Today', ne: 'आजको आवाज' },
         saved: { en: 'Saved', ne: 'सेभ' },
