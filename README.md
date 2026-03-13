@@ -1,4 +1,4 @@
-# GorkhayAI
+﻿# GorkhayAI
 
 GorkhayAI is a voice-first local intelligence app for the Darjeeling hills. It turns scattered news, alerts, schemes, and public updates into a calm, swipeable, source-visible feed.
 
@@ -83,15 +83,26 @@ npm install
 
 ### Start in demo mode
 
+Fastest local edit loop:
+
 ```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+### Start a fresh investor-demo build
 
-### Rehearse the production build
+Use this when the browser looks stale or you want to guarantee the current local repo state:
 
 ```bash
+npm run demo:fresh
+```
+
+Open `http://localhost:3000`.
+
+### Rehearse the production build manually
+
+```bash
+npm run clean
 npm run build
 npm run start
 ```
@@ -140,3 +151,4 @@ npm run build
 - [STATUS.md](./STATUS.md)
 - [IMPLEMENTATION_NOTES.md](./IMPLEMENTATION_NOTES.md)
 - [SOURCE_STRATEGY.md](./SOURCE_STRATEGY.md)
+

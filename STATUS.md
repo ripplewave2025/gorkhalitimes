@@ -1,4 +1,4 @@
-# STATUS
+﻿# STATUS
 
 _Last updated: 2026-03-13 14:10 IST_
 
@@ -104,3 +104,9 @@ Optional for live rehearsal:
 - Scheduled live ingestion with moderation
 - Server-side Nepali TTS
 - Deeper multilingual translation quality pass
+
+### 2026-03-13 15:10 - Stale build diagnosis
+
+- Confirmed the current compiled output in `.next/server/app/index.html` and `.next/server/app/more.html` has dark styling and correct Nepali text.
+- Confirmed the screenshot mismatch is coming from an older local/deployed build, not the current repo source.
+- Added `npm run demo:fresh` to wipe `.next`, rebuild, and start the current investor-demo build in one command.
