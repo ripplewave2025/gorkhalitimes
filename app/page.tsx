@@ -20,7 +20,6 @@ import { FeedLane, FeedResponse } from '@/types';
 const lanes: FeedLane[] = ['for-you', 'top-stories', 'alerts', 'tea', 'roads', 'govt-schemes', 'jobs', 'schools', 'weather', 'economy'];
 const useApiFeed = process.env.NEXT_PUBLIC_USE_API_FEED === 'true';
 const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
-const STORY_ROTATION_MS = 12000;
 
 function getRefreshIntervalMinutes() {
     const parsed = Number(process.env.NEXT_PUBLIC_FEED_REFRESH_MINUTES ?? '50');
@@ -146,18 +145,6 @@ export default function HomePage() {
             setCurrentIndex(0);
         }
     }, [currentIndex, filteredStories.length]);
-
-    useEffect(() => {
-        if (filteredStories.length <= 1) {
-            return;
-        }
-
-        const timer = window.setInterval(() => {
-            setCurrentIndex((index) => (index + 1) % filteredStories.length);
-        }, STORY_ROTATION_MS);
-
-        return () => window.clearInterval(timer);
-    }, [filteredStories.length]);
 
     const handleSearch = () => {
         addRecentSearch(query);
@@ -339,7 +326,7 @@ export default function HomePage() {
                                             {language === 'ne' ? 'अर्को हेर्नुहोस्' : 'Watch next'}
                                         </p>
                                         <h2 className="mt-2 text-lg font-semibold text-brand-ink">
-                                            {language === 'ne' ? 'कथा डेक स्वतः घुम्छ' : 'The story deck rotates automatically'}
+                                            {language === 'ne' ? 'आफ्नै रोजाइले कथा बदल्नुहोस्' : 'Choose the next story manually'}
                                         </h2>
                                     </div>
                                 </div>

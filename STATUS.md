@@ -48,6 +48,12 @@ _Last updated: 2026-03-13 14:10 IST_
 - Passed `npm run lint`
 - Passed `npm run build`
 
+### 2026-03-13 14:30 - Demo stability follow-up
+
+- Removed the Home spotlight auto-rotation after visual review so the investor demo stays fully still unless the user taps navigation controls.
+- Kept the 50-minute source refresh cadence intact for live rehearsal mode.
+- Revalidated with `npm run typecheck`, `npm run lint`, and `npm run build`.
+
 ## Known blockers / deferred work
 
 - Real OAuth, OTP, telephony, and server TTS remain deferred to the credentialed phase.
