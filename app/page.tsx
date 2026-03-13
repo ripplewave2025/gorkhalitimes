@@ -10,7 +10,6 @@ import AlertsBanner from '@/components/AlertsBanner';
 import LaneChips from '@/components/LaneChips';
 import LanguageToggle from '@/components/LanguageToggle';
 import SchemeCard from '@/components/SchemeCard';
-import SearchBar from '@/components/SearchBar';
 import StoryCard from '@/components/StoryCard';
 import ThemeToggle from '@/components/ThemeToggle';
 import { appCopy, categoryLabels } from '@/lib/client/copy';
@@ -31,10 +30,9 @@ function getRefreshIntervalMinutes() {
 
 export default function HomePage() {
     const router = useRouter();
-    const { language, preferences, addRecentSearch, contentLanguage, fallbackLanguage } = useLanguage();
+    const { language, preferences, contentLanguage, fallbackLanguage } = useLanguage();
     const [activeLane, setActiveLane] = useState<FeedLane>('for-you');
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [query, setQuery] = useState('');
     const [remoteFeed, setRemoteFeed] = useState<FeedResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
@@ -172,11 +170,6 @@ export default function HomePage() {
         };
     }, [spotlightStory, language, contentLanguage, fallbackLanguage]);
 
-    const handleSearch = () => {
-        addRecentSearch(query);
-        router.push(`/search${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`);
-    };
-
     const feedModeTitle = demoMode
         ? (language === 'ne' ? 'क्युरेट गरिएको डेमो डेक' : 'Curated demo deck')
         : useApiFeed
@@ -224,42 +217,11 @@ export default function HomePage() {
                                 </div>
                             ) : null}
                         </div>
+                        <div className="flex items-center gap-2">
+                            <ThemeToggle />
+                            <LanguageToggle />
+                        </div>
                     </header>
-
-                    <div className="px-1">
-                        <SearchBar
-                            value={query}
-                            onChange={setQuery}
-                            onSubmit={handleSearch}
-                            placeholder={getLocalizedText(appCopy.search.placeholder, language)}
-                            actionNode={
-                                <div className="flex items-center gap-2">
-                                    <ThemeToggle />
-                                    <LanguageToggle />
-                                </div>
-                            }
-                            sticky
-                        />
-
-                        {preferences.recentSearches.length > 0 ? (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {preferences.recentSearches.slice(0, 4).map((item) => (
-                                    <button
-                                        key={item}
-                                        type="button"
-                                        onClick={() => {
-                                            setQuery(item);
-                                            addRecentSearch(item);
-                                            router.push(`/search?q=${encodeURIComponent(item)}`);
-                                        }}
-                                        className="chip text-xs py-1"
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-                            </div>
-                        ) : null}
-                    </div>
                 </div>
                 <section className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)_300px] lg:items-start">
                     <aside className="order-2 space-y-4 lg:order-1">
