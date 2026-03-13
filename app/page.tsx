@@ -11,10 +11,11 @@ import LanguageToggle from '@/components/LanguageToggle';
 import SchemeCard from '@/components/SchemeCard';
 import SearchBar from '@/components/SearchBar';
 import StoryCard from '@/components/StoryCard';
-import { appCopy } from '@/lib/client/copy';
+import { appCopy, categoryLabels } from '@/lib/client/copy';
 import { formatRelativeTime, getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
 import { getFeed } from '@/lib/server/feed/get-feed';
+import { storyAudioService } from '@/lib/client/audio';
 import { FeedLane, FeedResponse } from '@/types';
 
 const lanes: FeedLane[] = ['for-you', 'top-stories', 'alerts', 'tea', 'roads', 'govt-schemes', 'jobs', 'schools', 'weather', 'economy'];
@@ -146,6 +147,29 @@ export default function HomePage() {
         }
     }, [currentIndex, filteredStories.length]);
 
+    // Auto-narration effect for the spotlight story
+    useEffect(() => {
+        if (!spotlightStory) return;
+        
+        const audioLanguage = contentLanguage === 'ne' ? 'ne-NP' : 'en-US';
+        const categoryText = getLocalizedText(categoryLabels[spotlightStory.category], language);
+        const summaryText = getLocalizedText(spotlightStory.summaryShort, contentLanguage, fallbackLanguage);
+        
+        const narrationText = language === 'ne' 
+            ? `${categoryText} अपडेट. ${summaryText}` 
+            : `${categoryText} update. ${summaryText}`;
+
+        // Small delay to ensure smooth transition
+        const timeoutId = setTimeout(() => {
+            void storyAudioService.playText(narrationText, audioLanguage);
+        }, 500);
+
+        return () => {
+            clearTimeout(timeoutId);
+            storyAudioService.stop();
+        };
+    }, [spotlightStory, language, contentLanguage, fallbackLanguage]);
+
     const handleSearch = () => {
         addRecentSearch(query);
         router.push(`/search${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`);
@@ -170,46 +194,10 @@ export default function HomePage() {
                 : 'Seeded local stories keep rehearsal and UI review deterministic.');
 
     return (
-        <div className="min-h-screen bg-brand-bg px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl space-y-5">
-                <header className="surface-card relative overflow-hidden rounded-[2.4rem] border border-brand-line/80 p-6 md:p-7">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(78,203,133,0.12),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(47,108,216,0.12),transparent_30%)]" />
-                    <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                        <div className="space-y-3">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <div className="inline-flex items-center gap-2 rounded-full bg-brand-green-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-green">
-                                    <MapPin size={14} />
-                                    Darjeeling hills intelligence
-                                </div>
-                                {demoMode ? (
-                                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink">
-                                        Investor demo mode
-                                    </div>
-                                ) : null}
-                            </div>
-                            <div>
-                                <p className={language === 'ne' ? 'text-xs font-semibold text-brand-muted' : 'text-xs font-semibold uppercase tracking-[0.24em] text-brand-muted'}>
-                                    {getLocalizedText(appCopy.feed.eyebrow, language)}
-                                </p>
-                                <h1 className="mt-2 text-3xl font-semibold text-brand-ink md:text-5xl">{getLocalizedText(appCopy.brand.appName, language)}</h1>
-                                <p className="mt-3 max-w-2xl text-sm leading-6 text-brand-muted md:text-base">{getLocalizedText(appCopy.brand.tagline, language)}</p>
-                            </div>
-                        </div>
-                        <LanguageToggle />
-                    </div>
-                </header>
-
+        <div className="min-h-screen bg-brand-bg">
+            <div className="mx-auto max-w-[1400px] px-3 py-3 sm:px-6 md:py-6 lg:px-8">
                 <div className="space-y-4">
-                    <SearchBar
-                        value={query}
-                        onChange={setQuery}
-                        onSubmit={handleSearch}
-                        placeholder={getLocalizedText(appCopy.search.placeholder, language)}
-                        submitLabel={getLocalizedText(appCopy.actions.go, language)}
-                        sticky
-                    />
-
-                    <section className="surface-card rounded-[1.8rem] border border-brand-line/80 p-3 md:p-4">
+                    <section className="-mx-4 px-4 sm:mx-0 sm:px-0">
                         <LaneChips
                             activeLane={activeLane}
                             onChange={(lane) => {
@@ -217,6 +205,33 @@ export default function HomePage() {
                                 setCurrentIndex(0);
                             }}
                             lanes={lanes}
+                        />
+                    </section>
+                    <header className="flex items-center justify-between px-2 pt-2 pb-1">
+                        <div className="flex items-center gap-2 opacity-50">
+                            <h1 className="text-[1.35rem] font-bold tracking-tight text-brand-ink">
+                                {getLocalizedText(appCopy.brand.appName, language)}
+                            </h1>
+                            <div className="inline-flex items-center gap-1 rounded-full bg-brand-green-soft px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-brand-green">
+                                <MapPin size={8} />
+                                DJA
+                            </div>
+                            {demoMode ? (
+                                <div className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/6 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-brand-ink">
+                                    Demo
+                                </div>
+                            ) : null}
+                        </div>
+                    </header>
+
+                    <div className="px-1">
+                        <SearchBar
+                            value={query}
+                            onChange={setQuery}
+                            onSubmit={handleSearch}
+                            placeholder={getLocalizedText(appCopy.search.placeholder, language)}
+                            actionNode={<LanguageToggle />}
+                            sticky
                         />
 
                         {preferences.recentSearches.length > 0 ? (
@@ -230,16 +245,15 @@ export default function HomePage() {
                                             addRecentSearch(item);
                                             router.push(`/search?q=${encodeURIComponent(item)}`);
                                         }}
-                                        className="chip"
+                                        className="chip text-xs py-1"
                                     >
                                         {item}
                                     </button>
                                 ))}
                             </div>
                         ) : null}
-                    </section>
+                    </div>
                 </div>
-
                 <section className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)_300px] lg:items-start">
                     <aside className="order-2 space-y-4 lg:order-1">
                         <article className="surface-card rounded-[1.9rem] border border-brand-line/80 p-5">

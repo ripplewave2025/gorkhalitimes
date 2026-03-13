@@ -84,5 +84,16 @@ export const storyAudioService = {
         window.speechSynthesis.speak(utterance);
         return true;
     },
+    playText(text: string, langCode: string): boolean {
+        if (!canUseSpeechSynthesis()) {
+            return false;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = langCode;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+        return true;
+    }
 };
 

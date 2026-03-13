@@ -98,8 +98,8 @@ export const appCopy = {
     search: {
         title: { en: 'Search the hills', ne: 'पहाडका खबर खोज्नुहोस्' },
         placeholder: {
-            en: 'Try: landslide peshok, tea price, govt scheme, school notice',
-            ne: 'उदाहरण: पेसोक पहिरो, चियाको भाउ, सरकारी योजना, विद्यालय सूचना',
+            en: 'Search GorkhayAI...',
+            ne: 'GorkhayAI मा खोज्नुहोस्...',
         },
         answerSummary: { en: 'Quick answer', ne: 'छोटो उत्तर' },
         noResults: {

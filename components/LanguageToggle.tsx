@@ -34,23 +34,21 @@ export default function LanguageToggle({ mode = 'compact' }: LanguageToggleProps
     }
 
     return (
-        <div className="surface-card inline-flex items-center gap-3 rounded-full border border-brand-line/80 bg-brand-bg/60 px-4 py-2.5 text-sm text-brand-ink">
-            <span className={language === 'ne' ? 'text-xs font-semibold text-brand-muted' : 'text-xs font-semibold uppercase tracking-[0.16em] text-brand-muted'}>
-                {language === 'ne' ? 'भाषा' : 'Lang'}
-            </span>
-            <div className="relative">
-                <select
-                    value={language}
-                    onChange={(event) => setLanguage(event.target.value as typeof language)}
-                    className="field-select min-w-[8.5rem] rounded-full border-brand-line/80 bg-brand-bg/80 py-2 pl-3 pr-10 text-sm font-medium"
-                >
-                    {SUPPORTED_LANGUAGES.map((item) => (
-                        <option key={item.code} value={item.code}>
-                            {item.nativeLabel}
-                        </option>
-                    ))}
-                </select>
-                <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted" />
+        <div className="relative inline-flex">
+            <select
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as typeof language)}
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                aria-label={language === 'ne' ? 'भाषा परिवर्तन गर्नुहोस्' : 'Change language'}
+            >
+                {SUPPORTED_LANGUAGES.map((item) => (
+                    <option key={item.code} value={item.code}>
+                        {item.nativeLabel}
+                    </option>
+                ))}
+            </select>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-bg/80 border border-brand-line/80 text-brand-ink/80 hover:bg-brand-bg hover:text-brand-ink transition-colors">
+                <span className="text-sm font-semibold">{language === 'ne' ? 'ने' : 'EN'}</span>
             </div>
         </div>
     );

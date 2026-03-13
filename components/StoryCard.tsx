@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bookmark, ChevronDown, ChevronUp, Share2, ShieldCheck } from 'lucide-react';
+import { motion, PanInfo } from 'framer-motion';
+import { Bookmark, ChevronDown, ChevronUp, Share2, ShieldCheck, ChevronRight, ChevronLeft } from 'lucide-react';
 import ListenButton from '@/components/ListenButton';
 import { guardianNotes } from '@/data/fixtures/notes';
 import { sources } from '@/data/fixtures/sources';
@@ -60,8 +61,25 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
         setSaveMessage(language === 'ne' ? 'सेभ गरिएको सूची अपडेट भयो।' : 'Saved list updated.');
     };
 
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        // Swipe Left -> Next
+        if (info.offset.x < -100 && onNext) {
+            onNext();
+        }
+        // Swipe Right -> Previous
+        if (info.offset.x > 100 && onPrevious) {
+            onPrevious();
+        }
+    };
+
     return (
-        <article className="surface-card overflow-hidden rounded-[2.2rem] border border-brand-line/80 bg-brand-surface/95">
+        <motion.article 
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
+            className="surface-card overflow-hidden rounded-[2.2rem] border border-brand-line/80 bg-brand-surface/95 cursor-grab active:cursor-grabbing"
+        >
             <div className="relative h-[24rem] w-full overflow-hidden md:h-[30rem] lg:h-[34rem]">
                 <Image
                     src={story.heroImageUrl}
@@ -86,13 +104,18 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                     </span>
                 </div>
                 {(onNext || onPrevious) ? (
-                    <div className="absolute bottom-5 right-5 flex gap-3">
-                        <button type="button" onClick={onPrevious} className="icon-float" aria-label="Previous story">
-                            <ChevronUp size={18} />
-                        </button>
-                        <button type="button" onClick={onNext} className="icon-float" aria-label="Next story">
-                            <ChevronDown size={18} />
-                        </button>
+                    <div className="absolute top-1/2 -translate-y-1/2 left-2 right-2 flex justify-between pointer-events-none opacity-50">
+                        {onPrevious && (
+                            <div className="rounded-full bg-black/40 p-1 text-white backdrop-blur-sm pointer-events-auto shadow-lg" onClick={onPrevious} aria-label="Previous story">
+                                <ChevronLeft size={24} />
+                            </div>
+                        )}
+                        {!onPrevious && <div />}
+                        {onNext && (
+                            <div className="rounded-full bg-black/40 p-1 text-white backdrop-blur-sm pointer-events-auto shadow-lg" onClick={onNext} aria-label="Next story">
+                                <ChevronRight size={24} />
+                            </div>
+                        )}
                     </div>
                 ) : null}
                 <div className="absolute bottom-0 left-0 right-0 p-5 text-white md:p-6">
@@ -158,6 +181,6 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                     {getLocalizedText(appCopy.actions.readFullStory, language)}
                 </Link>
             </div>
-        </article>
+        </motion.article>
     );
 }

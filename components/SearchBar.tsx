@@ -1,18 +1,19 @@
 'use client';
 
-import { FormEvent } from 'react';
+import { FormEvent, ReactNode } from 'react';
 import { Search } from 'lucide-react';
 
 interface SearchBarProps {
     value: string;
     placeholder: string;
-    submitLabel: string;
+    submitLabel?: string;
+    actionNode?: ReactNode;
     onChange: (value: string) => void;
     onSubmit: () => void;
     sticky?: boolean;
 }
 
-export default function SearchBar({ value, placeholder, submitLabel, onChange, onSubmit, sticky = false }: SearchBarProps) {
+export default function SearchBar({ value, placeholder, submitLabel, actionNode, onChange, onSubmit, sticky = false }: SearchBarProps) {
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
         onSubmit();
@@ -28,9 +29,13 @@ export default function SearchBar({ value, placeholder, submitLabel, onChange, o
                     placeholder={placeholder}
                     className="w-full bg-transparent text-sm text-brand-ink outline-none placeholder:text-brand-muted"
                 />
-                <button type="submit" className="pill-active shrink-0 text-xs">
-                    {submitLabel}
-                </button>
+                {actionNode ? (
+                    actionNode
+                ) : submitLabel ? (
+                    <button type="submit" className="pill-active shrink-0 text-xs">
+                        {submitLabel}
+                    </button>
+                ) : null}
             </div>
         </form>
     );
