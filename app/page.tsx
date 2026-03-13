@@ -209,12 +209,12 @@ export default function HomePage() {
                             lanes={lanes}
                         />
                     </section>
-                    <header className="flex items-center justify-between px-2 pt-2 pb-1">
-                        <div className="flex items-center gap-2 opacity-50">
-                            <h1 className="text-[1.35rem] font-bold tracking-tight text-brand-ink">
+                    <header className="flex items-center justify-between px-2 pt-1 pb-1">
+                        <div className="flex items-center gap-2 opacity-40">
+                            <h1 className="text-sm font-bold tracking-wide text-brand-ink uppercase">
                                 {getLocalizedText(appCopy.brand.appName, language)}
                             </h1>
-                            <div className="inline-flex items-center gap-1 rounded-full bg-brand-green-soft px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-brand-green">
+                            <div className="inline-flex items-center gap-1 rounded-full bg-brand-green-soft px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-brand-green">
                                 <MapPin size={8} />
                                 DJA
                             </div>
