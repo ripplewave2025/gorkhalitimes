@@ -87,71 +87,85 @@ export default function SwipeScreen({ story, isActive }: SwipeScreenProps) {
                 alt={getLocalizedText(story.headline, contentLanguage, fallbackLanguage)}
                 fill
                 priority={isActive}
-                className="object-cover opacity-80"
+                className="object-cover opacity-85"
             />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(0,0,0,0.8)_80%,rgba(0,0,0,0.95)_100%)]" />
+            {/* Tighter gradient so more image is visible */}
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_60%,rgba(0,0,0,0.7)_80%,rgba(0,0,0,0.95)_100%)]" />
 
-            {/* Added bottom padding so the BottomNav doesn't overlap on mobile */}
-            <div className="absolute inset-x-0 bottom-0 p-6 pb-28 md:pb-10 text-white flex flex-col justify-end">
-                <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <span className={`trust-pill trust-${story.trustBadge}`}>
-                        {getLocalizedText(trustBadgeLabels[story.trustBadge], language)}
-                    </span>
-                    <span className="rounded-full border border-white/20 bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                        {getLocalizedText(categoryLabels[story.category], language)}
-                    </span>
-                </div>
-
-                <p className="mb-2 text-xs uppercase tracking-[0.2em] text-white/70 font-semibold drop-shadow-md">
-                    {story.primaryLocation}
-                </p>
-
-                <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-3 drop-shadow-md">
-                    {getLocalizedText(story.headline, contentLanguage, fallbackLanguage)}
-                </h1>
-
-                <p className="text-sm md:text-base leading-relaxed text-white/80 mb-6 drop-shadow-md max-w-3xl">
-                    {getLocalizedText(story.summaryShort, contentLanguage, fallbackLanguage)}
-                </p>
-
-                <div className="mb-6 flex flex-wrap gap-2 text-xs">
-                    {storySources.map((source) => (
-                        <span key={source.id} className="rounded-full bg-white/10 px-3 py-1 backdrop-blur-md">
-                            {source.name}
+            {/* Bottom Content Area */}
+            <div className="absolute inset-x-0 bottom-0 p-5 pb-24 md:pb-10 text-white flex items-end justify-between">
+                
+                {/* Left Side: Story Content */}
+                <div className="flex-1 pr-4">
+                    {/* Unified Meta Row */}
+                    <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-white/80 drop-shadow-md mb-2 flex-wrap">
+                        <span className="text-brand-green-light">
+                            {getLocalizedText(categoryLabels[story.category], language)}
                         </span>
-                    ))}
-                    {guardianNote && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-brand-green/20 text-brand-green px-3 py-1 border border-brand-green/30 backdrop-blur-md">
-                            <ShieldCheck size={12} />
-                            {getLocalizedText(appCopy.story.guardianNote, language)}
+                        <span>•</span>
+                        <span>{story.primaryLocation}</span>
+                        <span>•</span>
+                        <span className="opacity-75">
+                            {getLocalizedText(trustBadgeLabels[story.trustBadge], language)}
                         </span>
-                    )}
-                </div>
+                    </div>
 
-                <div className="flex items-center gap-3">
+                    <h1 className="text-2xl md:text-4xl font-bold leading-snug mb-2 drop-shadow-md">
+                        {getLocalizedText(story.headline, contentLanguage, fallbackLanguage)}
+                    </h1>
+
+                    {/* Single paragraph, slightly smaller text for easy reading */}
+                    <p className="text-sm leading-relaxed text-white/90 drop-shadow-md max-w-xl line-clamp-3 mb-4">
+                        {getLocalizedText(story.summaryShort, contentLanguage, fallbackLanguage)}
+                    </p>
+
+                    {/* Prominent Listen Button docked neatly under the text */}
                     <button
                         onClick={handleToggleAudio}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-full bg-brand-green px-4 py-3.5 text-sm font-semibold text-white transition-transform active:scale-95 shadow-[0_0_20px_rgba(78,203,133,0.4)]"
+                        className="inline-flex items-center gap-2 rounded-full bg-brand-green/90 backdrop-blur-md px-5 py-2.5 text-sm font-semibold text-white transition-transform active:scale-95 shadow-lg border border-white/20"
                     >
                         {isPlaying ? <PauseCircle size={18} /> : <Headphones size={18} />}
                         {isPlaying 
                             ? getLocalizedText(appCopy.actions.stop, audioLanguage)
                             : getLocalizedText(appCopy.actions.listen, audioLanguage)}
                     </button>
+                </div>
 
+                {/* Right Side: Floating Vertical Action Bar */}
+                <div className="flex flex-col items-center justify-end gap-5 pb-2">
                     <button
                         onClick={handleSave}
-                        className="flex aspect-square h-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20 active:scale-95 border border-white/10"
+                        className="group flex flex-col items-center gap-1 active:scale-95 transition-transform"
                     >
-                        <Bookmark size={20} className={saved ? 'fill-current' : ''} />
+                        <div className="flex aspect-square h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20 group-hover:bg-white/20">
+                            <Bookmark size={20} className={saved ? 'fill-current' : ''} />
+                        </div>
+                        <span className="text-[10px] font-medium text-white/80 drop-shadow-md">
+                            {getLocalizedText(appCopy.actions.save, language)}
+                        </span>
                     </button>
 
                     <button
                         onClick={handleShare}
-                        className="flex aspect-square h-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white/20 active:scale-95 border border-white/10"
+                        className="group flex flex-col items-center gap-1 active:scale-95 transition-transform"
                     >
-                        <Share2 size={20} />
+                        <div className="flex aspect-square h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md border border-white/20 group-hover:bg-white/20">
+                            <Share2 size={20} />
+                        </div>
+                        <span className="text-[10px] font-medium text-white/80 drop-shadow-md">
+                            {getLocalizedText(appCopy.actions.share, language)}
+                        </span>
                     </button>
+                    
+                    {/* Guardian Note Indicator (Simplified Dot) */}
+                    {guardianNote && (
+                        <div className="group flex flex-col items-center gap-1 mt-2">
+                            <div className="flex aspect-square h-10 w-10 items-center justify-center rounded-full bg-brand-green/20 text-brand-green-light backdrop-blur-md border border-brand-green/40">
+                                <ShieldCheck size={20} />
+                            </div>
+                            <span className="text-[10px] font-medium text-brand-green-light drop-shadow-md">Note</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </article>
