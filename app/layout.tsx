@@ -8,6 +8,7 @@ import {
 import { AuthProvider } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import BottomNav from '@/components/BottomNav';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import './globals.css';
 
 const bodyFont = Manrope({
@@ -51,13 +52,15 @@ export default function RootLayout({
 }) {
     return (
         <html lang="ne">
-            <body className={`${bodyFont.variable} ${displayFont.variable} ${devanagariFont.variable} ${bengaliFont.variable}`}>
-                <LanguageProvider>
-                    <AuthProvider>
-                        <main className="pb-32 lg:pb-0">{children}</main>
-                        <BottomNav />
-                    </AuthProvider>
-                </LanguageProvider>
+            <body className={`${bodyFont.variable} ${displayFont.variable} ${devanagariFont.variable} ${bengaliFont.variable} bg-brand-bg text-brand-ink`}>
+                <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
+                    <LanguageProvider>
+                        <AuthProvider>
+                            <main className="pb-24 lg:pb-0">{children}</main>
+                            <BottomNav />
+                        </AuthProvider>
+                    </LanguageProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

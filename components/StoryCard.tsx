@@ -74,11 +74,16 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
 
     return (
         <motion.article 
+            key={story.id}
+            initial={{ opacity: 0, x: 25, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -25, scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
+            dragElastic={0.4}
             onDragEnd={handleDragEnd}
-            className="surface-card overflow-hidden rounded-[2.2rem] border border-brand-line/80 bg-brand-surface/95 cursor-grab active:cursor-grabbing"
+            className="surface-card overflow-hidden rounded-[2.2rem] border border-brand-line/80 bg-brand-surface/95 cursor-grab active:cursor-grabbing will-change-transform"
         >
             <div className="relative h-[24rem] w-full overflow-hidden md:h-[30rem] lg:h-[34rem]">
                 <Image
@@ -89,19 +94,23 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                     priority
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,8,12,0.18),rgba(4,8,12,0.3)_30%,rgba(4,8,12,0.82)_72%,rgba(4,8,12,0.96)_100%)]" />
-                <div className="absolute left-4 right-4 top-4 flex flex-wrap items-center gap-2">
-                    <span className={`trust-pill trust-${story.trustBadge}`}>{getLocalizedText(trustBadgeLabels[story.trustBadge], language)}</span>
-                    <span className="rounded-full border border-white/12 bg-black/40 px-3 py-1 text-xs font-medium text-white">
-                        {getLocalizedText(categoryLabels[story.category], language)}
-                    </span>
-                    {guardianNote ? (
-                        <span className="rounded-full border border-brand-green/30 bg-brand-green/16 px-3 py-1 text-xs font-medium text-brand-green">
-                            {getLocalizedText(appCopy.story.guardianNote, language)}
+                <div className="absolute left-4 right-4 top-4 flex flex-wrap items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2 max-w-[75%]">
+                        <span className={`trust-pill trust-${story.trustBadge}`}>{getLocalizedText(trustBadgeLabels[story.trustBadge], language)}</span>
+                        <span className="rounded-full border border-white/12 bg-black/40 px-3 py-1 text-xs font-medium text-white shadow-md">
+                            {getLocalizedText(categoryLabels[story.category], language)}
                         </span>
-                    ) : null}
-                    <span className="rounded-full border border-white/12 bg-black/40 px-3 py-1 text-xs font-medium text-white">
-                        {getLocalizedText(audioStatusLabels[story.audioStatus ?? 'browser-fallback'], language)}
-                    </span>
+                        {guardianNote ? (
+                            <span className="flex items-center gap-1 rounded-full border border-brand-green/40 bg-brand-green/30 px-3 py-1 text-xs font-bold text-[#b4fcd1] shadow-[0_4px_12px_rgba(78,203,133,0.25)] backdrop-blur-md">
+                                <ShieldCheck size={14} />
+                                {getLocalizedText(appCopy.story.guardianNote, language)}
+                            </span>
+                        ) : null}
+                    </div>
+                    {/* Headset button placed prominently at the top */}
+                    <div className="shrink-0 drop-shadow-xl">
+                        <ListenButton story={story} />
+                    </div>
                 </div>
                 {(onNext || onPrevious) ? (
                     <div className="absolute top-1/2 -translate-y-1/2 left-2 right-2 flex justify-between pointer-events-none opacity-50">
@@ -160,8 +169,7 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                     </div>
                 ) : null}
 
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                    <ListenButton story={story} />
+                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                     <button type="button" onClick={handleSave} className="btn-secondary justify-center">
                         <Bookmark size={16} className={saved ? 'fill-current' : ''} />
                         {getLocalizedText(appCopy.actions.save, language)}

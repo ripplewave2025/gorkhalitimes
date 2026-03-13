@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 :root {
+    --brand-bg: #f5f8fc;
+    --brand-surface: rgba(255, 255, 255, 0.92);
+    --brand-line: #e1e7f0;
+    --brand-ink: #0f1926;
+    --brand-muted: #5e7082;
+    --brand-green: #25a15c;
+    --brand-green-dark: #1b8449;
+    --brand-green-soft: rgba(37, 161, 92, 0.12);
+    --brand-bg-rgb: 245 248 252;
+    --brand-surface-rgb: 255 255 255;
+    --brand-line-rgb: 225 231 240;
+    --brand-ink-rgb: 15 25 38;
+    --brand-muted-rgb: 94 112 130;
+    --brand-green-rgb: 37 161 92;
+    --brand-green-dark-rgb: 27 132 73;
+    --brand-green-soft-rgb: 37 161 92;
+    --font-fallback-script: 'Nirmala UI', 'Mangal', 'Kokila', 'Segoe UI Historic', sans-serif;
+}
+
+.dark {
     --brand-bg: #090c10;
     --brand-surface: rgba(18, 24, 32, 0.84);
     --brand-line: #223044;
@@ -19,7 +39,6 @@
     --brand-green-rgb: 78 203 133;
     --brand-green-dark-rgb: 51 165 106;
     --brand-green-soft-rgb: 78 203 133;
-    --font-fallback-script: 'Nirmala UI', 'Mangal', 'Kokila', 'Segoe UI Historic', sans-serif;
 }
 
 * {
@@ -31,7 +50,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100%;
-    background: radial-gradient(circle at top, #0f1926 0%, #090c10 48%, #05070a 100%);
+    background: var(--brand-bg);
     color: var(--brand-ink);
     font-family: var(--font-sans), system-ui, sans-serif;
     letter-spacing: -0.01em;
@@ -129,9 +148,9 @@ textarea {
 .nav-item-active {
     flex-direction: column;
     justify-content: center;
-    min-height: 4rem;
+    min-height: 3.5rem;
     min-width: 4.5rem;
-    padding: 0.55rem 0.75rem;
+    padding: 0.45rem 0.5rem;
     color: var(--brand-muted);
     font-size: 0.72rem;
     text-decoration: none;

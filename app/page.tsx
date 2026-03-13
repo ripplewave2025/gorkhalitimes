@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Loader2, MapPin, RadioTower, Sparkles } from 'lucide-react';
 import AlertsBanner from '@/components/AlertsBanner';
 import LaneChips from '@/components/LaneChips';
@@ -11,6 +12,7 @@ import LanguageToggle from '@/components/LanguageToggle';
 import SchemeCard from '@/components/SchemeCard';
 import SearchBar from '@/components/SearchBar';
 import StoryCard from '@/components/StoryCard';
+import ThemeToggle from '@/components/ThemeToggle';
 import { appCopy, categoryLabels } from '@/lib/client/copy';
 import { formatRelativeTime, getLocalizedText } from '@/lib/client/language';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -230,7 +232,12 @@ export default function HomePage() {
                             onChange={setQuery}
                             onSubmit={handleSearch}
                             placeholder={getLocalizedText(appCopy.search.placeholder, language)}
-                            actionNode={<LanguageToggle />}
+                            actionNode={
+                                <div className="flex items-center gap-2">
+                                    <ThemeToggle />
+                                    <LanguageToggle />
+                                </div>
+                            }
                             sticky
                         />
 
@@ -299,16 +306,19 @@ export default function HomePage() {
                         <AlertsBanner />
                     </aside>
 
-                    <div className="order-1 space-y-4 lg:order-2">
-                        {spotlightStory ? (
-                            <StoryCard
-                                story={spotlightStory}
-                                onNext={() => setCurrentIndex((index) => (index + 1) % filteredStories.length)}
-                                onPrevious={() => setCurrentIndex((index) => (index - 1 + filteredStories.length) % filteredStories.length)}
-                            />
-                        ) : null}
+                    <div className="order-1 flex flex-col space-y-4 lg:order-2">
+                        <AnimatePresence mode="wait">
+                            {spotlightStory ? (
+                                <StoryCard
+                                    key={spotlightStory.id}
+                                    story={spotlightStory}
+                                    onNext={() => setCurrentIndex((index) => (index + 1) % filteredStories.length)}
+                                    onPrevious={() => setCurrentIndex((index) => (index - 1 + filteredStories.length) % filteredStories.length)}
+                                />
+                            ) : null}
+                        </AnimatePresence>
 
-                        <section className="surface-card rounded-[1.9rem] border border-brand-line/80 p-5">
+                        <section className="surface-card rounded-[1.9rem] border border-brand-line/80 p-5 mt-auto">
                             <div className="mb-4 flex items-center justify-between gap-3">
                                 <p className="text-sm leading-6 text-brand-muted">{getLocalizedText(appCopy.feed.helper, language)}</p>
                                 <span className="text-sm font-medium text-brand-muted">
