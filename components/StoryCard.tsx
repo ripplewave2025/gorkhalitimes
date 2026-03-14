@@ -51,12 +51,12 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
         });
 
         if (!response.ok) {
-            setSaveMessage(language === 'ne' ? '??? ??? ???? ????-?? ????????' : 'Sign in is required to save stories.');
+            setSaveMessage(language === 'ne' ? 'कथा सुरक्षित गर्न साइन इन आवश्यक छ।' : 'Sign in is required to save stories.');
             return;
         }
 
         setSaved((current) => !current);
-        setSaveMessage(language === 'ne' ? '??? ???? ????? ????' : 'Saved list updated.');
+        setSaveMessage(language === 'ne' ? 'सेभ गरिएको सूची अपडेट भयो।' : 'Saved list updated.');
     };
 
     return (
@@ -104,6 +104,10 @@ export default function StoryCard({ story, onNext, onPrevious }: StoryCardProps)
                             {getLocalizedText(appCopy.story.guardianNote, language)}
                         </div>
                         <p>{getLocalizedText(guardianNote.text, contentLanguage, fallbackLanguage)}</p>
+                        <p className="mt-3 text-xs text-brand-muted">
+                            {language === 'ne' ? 'विश्वसनीयता:' : 'Confidence:'} <span className="font-medium text-brand-ink">{guardianNote.confidence}</span> · {language === 'ne' ? 'स्रोत:' : 'Sources:'} <span className="font-medium text-brand-ink">{guardianNote.sourceIds.length}</span>
+                            {guardianNote.fastTracked ? ` · ${language === 'ne' ? 'Guardian fast-track' : 'Guardian fast-track'}` : ''}
+                        </p>
                     </div>
                 ) : null}
                 <div className="grid gap-3 md:grid-cols-2">

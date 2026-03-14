@@ -1,32 +1,54 @@
-﻿# Implementation Notes
+# Implementation Notes
 
 ## Safe defaults used
 
 - Nepali is the default UI, content, and audio language everywhere.
-- Extra languages are scaffolded in settings and onboarding, but only Nepali and English have broad copy coverage today. Hindi and Bengali are partially ready through fallback. Tibetan, Lepcha, Dzongkha, and Sherpa are marked experimental and currently fall back to available content.
-- Auth is adapter-shaped but locally mocked so Phase 2 remains runnable without Clerk, Firebase, Twilio, or Google OAuth setup.
-- Browser speech synthesis is the default listen-now path until server-side TTS is connected.
-- Live source ingestion is feature-flagged to keep local development deterministic and build-safe.
+- Auth is adapter-shaped but locally mocked so the app runs without paid provider setup.
+- Browser speech synthesis is the default no-API listen-now path.
+- Live source ingestion is feature-flagged to keep local development deterministic unless explicitly enabled.
 
-## Tradeoffs made in this phase
+## Continuation plan from commit 528d15d
 
-- Story save state is protected and session-backed through API routes, but scheme save state is still local UI state.
-- Guardian Angel Note lifecycle is conservative and server-checked, but new published notes are not yet fully persisted to a database.
-- Live ingestion uses a lightweight RSS parser and HTML metadata extractor instead of a heavier extraction stack. This keeps cost and setup low, but extraction quality will vary by source.
-- Some admin pages are thin operational views instead of full moderation dashboards.
-- The Prisma schema is expanded for Phase 2, but Prisma client generation and migrations are not wired yet because the runtime still uses fixture-backed services.
+This continuation focused on converting the scaffold into a stronger no-API demo path:
+
+1. Harden live ingestion behavior and source health handling.
+2. Seed practical real public sources (official + RSS) and document source strategy.
+3. Improve mobile-first visual polish and trust clarity in feed cards.
+4. Tighten handoff docs for investor/demo readiness.
+
+## Changes in this continuation
+
+### Ingestion/runtime reliability
+- Added in-memory ingestion cache (10 minute TTL) to avoid expensive repeated fetches per request.
+- Added source-level degraded/failing handling and safer health output.
+- Added lightweight dedupe for live stories by slug/location.
+
+### Source registry quality
+- Replaced placeholder sources with practical public feed/site seeds where possible.
+- Kept architecture adapter-based (RSS + extractor) and avoided social scraping.
+
+### UX quality and clarity
+- Applied dark-first premium visual styling with calmer surfaces/chips/buttons.
+- Added Home live-fetch loading/error states and graceful fallback messaging.
+- Fixed broken Scheme card labels and improved clarity text.
+- Improved Guardian Angel Note block with confidence/source/fast-track context.
+
+## Remaining tradeoffs
+
+- Live extraction quality depends on each source template and can degrade when HTML changes.
+- Some external images may fail in restricted environments; cards still render textual content and source context.
+- Several Nepali fixture strings remain low-quality placeholders from earlier phases and need a dedicated translation cleanup pass.
+- Prisma schema is expanded, but persistence is still mixed with fixture-backed stores.
 
 ## Feature flags
 
-- `ENABLE_LIVE_INGESTION=true` enables live source ingestion in the feed/search APIs.
-- `NEXT_PUBLIC_USE_API_FEED=true` makes Home, Search, and Voice Today consume the API-backed feed/search instead of local-only helpers.
+- `ENABLE_LIVE_INGESTION=true`: enables live source ingestion in feed/search APIs.
+- `NEXT_PUBLIC_USE_API_FEED=true`: makes Home/Search consume API-backed feed/search responses.
 
-## Recommended next steps
+## Recommended next phase (with API access)
 
-1. Replace mock auth with Clerk or Auth.js plus a real OTP provider.
-2. Persist notes, help requests, saves, and preferences in PostgreSQL through Prisma.
-3. Add source approval tooling and a real ingest scheduler around the adapter layer.
-4. Replace browser speech fallback with cached server-generated Nepali audio for top stories.
-5. Expand multilingual copy coverage beyond Nepali and English.
-6. Add proper file/audio upload storage for voice-help submissions.
-
+1. Add real auth (Auth.js/Clerk + OTP provider).
+2. Add persistent Postgres-backed storage for saves/notes/help/preferences.
+3. Add robust extraction pipeline + scheduler + source approval tooling.
+4. Add server-side cached Nepali TTS provider behind the existing audio adapter.
+5. Run focused multilingual translation quality pass (Nepali/Hindi/Bengali first).

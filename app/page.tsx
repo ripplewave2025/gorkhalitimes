@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { MapPin } from 'lucide-react';
+import { Loader2, MapPin, AlertTriangle } from 'lucide-react';
 import AlertsBanner from '@/components/AlertsBanner';
 import LaneChips from '@/components/LaneChips';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -26,12 +26,15 @@ export default function HomePage() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [query, setQuery] = useState('');
     const [remoteFeed, setRemoteFeed] = useState<FeedResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!useApiFeed) {
             return;
         }
 
+        const controller = new AbortController();
         const params = new URLSearchParams({ lane: activeLane });
         if (preferences.preferredPlaces.length > 0) {
             params.set('preferred_places', preferences.preferredPlaces.join(','));
@@ -47,9 +50,25 @@ export default function HomePage() {
         }
         params.set('govt_schemes_alerts', String(preferences.govtSchemesAlerts));
 
-        fetch(`/api/feed?${params.toString()}`)
-            .then((response) => response.json())
-            .then((data) => setRemoteFeed(data));
+        setIsLoading(true);
+        setFetchError(null);
+
+        fetch(`/api/feed?${params.toString()}`, { signal: controller.signal })
+            .then(async (response) => {
+                if (!response.ok) {
+                    throw new Error(`Feed request failed: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => setRemoteFeed(data))
+            .catch((error) => {
+                if (error.name !== 'AbortError') {
+                    setFetchError(error.message ?? 'Feed fetch failed');
+                }
+            })
+            .finally(() => setIsLoading(false));
+
+        return () => controller.abort();
     }, [activeLane, preferences]);
 
     const fallbackFeed = getFeed({ lane: activeLane, preferences });
@@ -73,7 +92,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-brand-bg px-4 py-6">
             <div className="mx-auto max-w-3xl space-y-4">
-                <header className="flex flex-col gap-4 rounded-[2rem] bg-white p-5 shadow-sm md:flex-row md:items-start md:justify-between">
+                <header className="surface-card flex flex-col gap-4 rounded-[2rem] p-5 md:flex-row md:items-start md:justify-between">
                     <div className="space-y-3">
                         <div className="inline-flex items-center gap-2 rounded-full bg-brand-green-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-green">
                             <MapPin size={14} />
@@ -91,7 +110,7 @@ export default function HomePage() {
                 {!preferences.onboardingComplete ? (
                     <Link href="/onboarding" className="surface-card block rounded-[1.6rem] p-4 text-sm leading-6 text-brand-ink">
                         {language === 'ne'
-                            ? '????????? ?????? ????? ?????, ???? ? ????? ?????????? ??? ???? ????????? ???? ??????????'
+                            ? 'प्राथमिकताहरू ठीक मिलाउन onboarding पूरा गर्नुहोस्।'
                             : 'Finish onboarding to keep Nepali-first defaults while tuning places, topics, and audio.'}
                     </Link>
                 ) : null}
@@ -125,6 +144,18 @@ export default function HomePage() {
 
                 <AlertsBanner />
 
+                {isLoading && useApiFeed ? (
+                    <section className="surface-card rounded-[1.6rem] p-4 text-sm text-brand-muted">
+                        <span className="inline-flex items-center gap-2"><Loader2 size={16} className="animate-spin" /> Refreshing live stories…</span>
+                    </section>
+                ) : null}
+
+                {fetchError ? (
+                    <section className="surface-card rounded-[1.6rem] border border-red-200 p-4 text-sm text-red-300">
+                        <span className="inline-flex items-center gap-2"><AlertTriangle size={16} /> Live feed fallback active: {fetchError}</span>
+                    </section>
+                ) : null}
+
                 <section className="surface-card rounded-[1.6rem] p-4 text-sm leading-6 text-brand-muted">
                     {getLocalizedText(appCopy.feed.personalized, language)}
                 </section>
@@ -154,4 +185,3 @@ export default function HomePage() {
         </div>
     );
 }
-
